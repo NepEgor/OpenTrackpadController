@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "usbd_core.h": "c",
+        "usbd_conf.h": "c",
+        "usbd_ctlreq.h": "c",
+        "usbd_def.h": "c",
+        "usbd_desc.h": "c",
+        "usbd_customhid.h": "c",
+        "usbd_custom_hid_if.h": "c",
+        "usbd_ioreq.h": "c",
+        "hid_def.h": "c",
+        "stdbool.h": "c"
+    }
+}
