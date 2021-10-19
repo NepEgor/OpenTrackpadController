@@ -18,7 +18,7 @@ const uint8_t CLOCK_PIN_right = PB8;
 const uint8_t DATA_PIN_left  = PB7;
 const uint8_t CLOCK_PIN_left = PB6;
 
-#include "touch_joystick.h"
+#include "touch_controls.h"
 // x_max 3276
 // y_max 1872
 const int32_t pos_x = 31.25 * 1872.0 / 62.5;
