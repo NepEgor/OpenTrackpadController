@@ -24,9 +24,12 @@ const uint8_t CLOCK_PIN_left = PB6;
 const int32_t pos_x = 31.25 * 1872.0 / 62.5;
 const int32_t pos_y = (103.9 - 31.25) * 3276.0 / 103.9;
 const int32_t pos_r = 60 * 1872.0 / 62.5 / 2;
-const int16_t max_x = 0x7FFF;
-const int16_t max_y = -0x7FFF;
-TouchJoystick tjoystick(pos_x, pos_y, pos_r, max_x, max_y);
+const int32_t dead_zone_inner = 3 * 1872.0 / 62.5 / 2;
+const int32_t dead_zone_outer = 20 * 1872.0 / 62.5 / 2;
+const int16_t usb_x = 512;
+const int16_t usb_y = 512;
+const int16_t usb_r = 512;
+TouchJoystick tjoystick(pos_x, pos_y, pos_r, usb_x, usb_y, usb_r);
 
 typedef struct
 {
@@ -50,12 +53,16 @@ void setup()
 
     //device.begin();
 
-    HID_Custom_Init();
+    tjoystick.setDeadZoneInner(dead_zone_inner);
+    tjoystick.setDeadZoneOuter(dead_zone_outer);
+    tjoystick.setInvertY(true);
 
     testReport = { 0, 0, 0 };
 
     attachInterrupt(CLOCK_PIN_right, int_touchpad_right, FALLING);
     trackpad_right.initialize(CLOCK_PIN_right, DATA_PIN_right);
+
+    HID_Custom_Init();
 
     //attachInterrupt(CLOCK_PIN_left, int_touchpad_left, FALLING);
     //trackpad_left.initialize(CLOCK_PIN_left, DATA_PIN_left);
@@ -89,8 +96,8 @@ void loop()
     }
     else if (fingers_touching == 0)
     {
-        testReport.x = 0;
-        testReport.y = 0;
+        testReport.x = usb_x;
+        testReport.y = usb_y;
     }
 
     //Serial.printf("%u %u %u\n", testReport.x, testReport.y, testReport.r);

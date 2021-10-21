@@ -10,10 +10,11 @@ int main()
     int32_t pos_y = 350;
     int32_t pos_r = 2000;
 
-    int16_t max_x = 1023;
-    int16_t max_y = 1023;
+    int16_t usb_x = 512;
+    int16_t usb_y = 512;
+    int16_t usb_r = 512;
 
-    TouchJoystick tjoystick(pos_x, pos_y, pos_r, max_x, max_y);
+    TouchJoystick tjoystick(pos_x, pos_y, pos_r, usb_x, usb_y, usb_r);
 
     int32_t touch_x = 10000;
     int32_t touch_y = 200;

@@ -1,27 +1,27 @@
 #include "touch_joystick.h"
 
-TouchJoystick::TouchJoystick(int32_t pos_x, int32_t pos_y, int32_t pos_r, int16_t min_x, int16_t min_y, int16_t max_x, int16_t max_y)
+#include <math.h>
+
+TouchJoystick::TouchJoystick(int32_t pos_x, int32_t pos_y, int32_t pos_r, int16_t usb_x, int16_t usb_y, int16_t usb_r)
 {
     this->pos_x = pos_x;
     this->pos_y = pos_y;
     this->pos_r = pos_r;
     this->pos_r2 = pos_r * pos_r;
 
-    this->min_x = min_x;
-    this->min_y = min_y;
-    this->max_x = max_x;
-    this->max_y = max_y;
+    this->usb_x = usb_x;
+    this->usb_y = usb_y;
+    this->usb_r = usb_r;
 
-    this->cen_x = (max_x - min_x) / 2;
-    this->cen_y = (max_y - min_y) / 2;
-
-    this->pos2usb_x = (float)(max_x - min_x) / pos_r;
-    this->pos2usb_y = (float)(max_y - min_y) / pos_r;
+    this->pos2usb = (float)usb_r / pos_r;
 
     this->dead_zone_inner = 0;
     this->dead_zone_inner2 = 0;
     this->dead_zone_outer = pos_r;
     this->dead_zone_outer2 = pos_r2;
+
+    this->invert_x = false;
+    this->invert_y = false;
 }
 
 void TouchJoystick::setDeadZoneInner(int32_t dead_zone_inner)
@@ -35,8 +35,17 @@ void TouchJoystick::setDeadZoneOuter(int32_t dead_zone_outer)
     this->dead_zone_outer = pos_r - dead_zone_outer; // argument is from the outer edge, atribute is from the center
     this->dead_zone_outer2 = this->dead_zone_outer * this->dead_zone_outer;
 
-    pos2usb_x = (float)(max_x - min_x) * pos_r / this->dead_zone_outer;
-    pos2usb_y = (float)(max_y - min_y) * pos_r / this->dead_zone_outer;
+    pos2usb = (float)usb_r / this->dead_zone_outer;
+}
+
+void TouchJoystick::setInvertX(bool invert_x)
+{
+    this->invert_x = invert_x;
+}
+
+void TouchJoystick::setInvertY(bool invert_y)
+{
+    this->invert_y = invert_y;
 }
 
 uint8_t TouchJoystick::touch(int32_t tx, int32_t ty, int16_t* rx, int16_t* ry)
@@ -46,28 +55,32 @@ uint8_t TouchJoystick::touch(int32_t tx, int32_t ty, int16_t* rx, int16_t* ry)
     tx -= pos_x;
     ty -= pos_y;
 
-    int32_t tx2 = tx * tx;
-    int32_t ty2 = ty * ty;
+    int32_t t2 = tx * tx + ty * ty;
     
     // if inside inner dead_zone or outside the range
-    if (tx2 + ty2 < dead_zone_inner2 || tx2 + ty2 > pos_r2)
+    if (t2 < dead_zone_inner2 || t2 > pos_r2)
     {
-        x = cen_x;
-        y = cen_y;
+        x = usb_x;
+        y = usb_y;
 
         ret = -1;
     }
     else // between dead zones
-    if (tx2 + ty2 <= dead_zone_outer2)
+    if (t2 <= dead_zone_outer2)
     {
-        x = tx * pos2usb_x + min_x;
-        y = ty * pos2usb_y + min_y;
+        x = tx * pos2usb + usb_x;
+        y = ty * pos2usb + usb_y;
     }
     else // in bounds outside of outer dead zone
     {
-        x = tx * pos2usb_x + min_x; // TODO dead zone
-        y = ty * pos2usb_y + min_y;
+        float len = sqrt(t2);
+
+        x = (tx * dead_zone_outer / len) * pos2usb + usb_x;
+        y = (ty * dead_zone_outer / len) * pos2usb + usb_y;
     }
+
+    if (invert_x) x = usb_x + usb_r - x;
+    if (invert_y) y = usb_y + usb_r - y;
 
     if (rx != NULL && ry != NULL)
     {
