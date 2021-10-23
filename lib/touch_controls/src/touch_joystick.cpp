@@ -4,6 +4,11 @@
 
 TouchJoystick::TouchJoystick(int32_t pos_x, int32_t pos_y, int32_t pos_r, int16_t usb_x, int16_t usb_y, int16_t usb_r)
 {
+    init(pos_x, pos_y, pos_r, usb_x, usb_y, usb_r);
+}
+
+void TouchJoystick::init(int32_t pos_x, int32_t pos_y, int32_t pos_r, int16_t usb_x, int16_t usb_y, int16_t usb_r)
+{
     this->pos_x = pos_x;
     this->pos_y = pos_y;
     this->pos_r = pos_r;
@@ -50,20 +55,25 @@ void TouchJoystick::setInvertY(bool invert_y)
 
 int8_t TouchJoystick::touch(int32_t tx, int32_t ty, int16_t* rx, int16_t* ry)
 {   
-    uint8_t ret = 1;
+    uint8_t ret = 2;
 
     tx -= pos_x;
     ty -= pos_y;
 
     int32_t t2 = tx * tx + ty * ty;
     
-    // if inside inner dead_zone or outside the range
-    if (t2 < dead_zone_inner2 || t2 > pos_r2)
-    {
-        x = usb_x;
-        y = usb_y;
+    x = usb_x;
+    y = usb_y;
 
+    // outside the range
+    if (t2 > pos_r2)
+    {
         ret = 0;
+    }
+    else // inside inner dead_zone
+    if (t2 < dead_zone_inner2)
+    {
+        ret = 1;
     }
     else // between dead zones
     if (t2 <= dead_zone_outer2)

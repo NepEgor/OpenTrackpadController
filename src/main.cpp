@@ -19,17 +19,11 @@ const uint8_t DATA_PIN_left  = PB7;
 const uint8_t CLOCK_PIN_left = PB6;
 
 #include "touch_controls.h"
-// x_max 3276
-// y_max 1872
-const int32_t pos_x = 31.25 * 1872.0 / 62.5;
-const int32_t pos_y = (103.9 - 31.25) * 3276.0 / 103.9;
-const int32_t pos_r = 70 * 1872.0 / 62.5 / 2;
-const int32_t dead_zone_inner = 3 * 1872.0 / 62.5 / 2;
-const int32_t dead_zone_outer = 25 * 1872.0 / 62.5 / 2;
+TouchJoystick tjoystick;
+
 const int16_t usb_x = 512;
 const int16_t usb_y = 512;
 const int16_t usb_r = 512;
-TouchJoystick tjoystick(pos_x, pos_y, pos_r, usb_x, usb_y, usb_r);
 
 typedef struct
 {
@@ -51,16 +45,23 @@ void setup()
     pinMode(TRIGGER_RIGHT_PIN, INPUT_ANALOG);
     pinMode(TRACKPAD_CLICK_RIGHT_PIN, INPUT_PULLDOWN);
 
-    //device.begin();
+    attachInterrupt(CLOCK_PIN_right, int_touchpad_right, FALLING);
+    trackpad_right.initialize(CLOCK_PIN_right, DATA_PIN_right);
+
+    float ppmX = trackpad_right.getMaxY() / 62.5;
+    float ppmY = trackpad_right.getMaxX() / 103.9;
+    int32_t pos_x = 31.25 * ppmX;
+    int32_t pos_y = (103.9 - 31.25) * ppmY;
+    int32_t pos_r = 70 * ppmX / 2;
+    int32_t dead_zone_inner = 3 * ppmX;
+    int32_t dead_zone_outer = 13 * ppmX;
+    tjoystick.init(pos_x, pos_y, pos_r, usb_x, usb_y, usb_r);
 
     tjoystick.setDeadZoneInner(dead_zone_inner);
     tjoystick.setDeadZoneOuter(dead_zone_outer);
     tjoystick.setInvertY(true);
 
     testReport = { 0, 0, 0 };
-
-    attachInterrupt(CLOCK_PIN_right, int_touchpad_right, FALLING);
-    trackpad_right.initialize(CLOCK_PIN_right, DATA_PIN_right);
 
     HID_Custom_Init();
 
@@ -90,11 +91,14 @@ void loop()
         {
             int16_t x, y;
             
-            for (uint8_t id = 0; id < TrackPad::fingers_num; ++id)
+            for (int8_t id = 0; id < TrackPad::fingers_num; ++id)
             {
-                if (tjoystick.touch(fp[id].y, fp[id].x, &x, &y))
+                if (fingers_touching & (1 << id))
                 {
-                    break;
+                    if (tjoystick.touch(fp[id].y, fp[id].x, &x, &y))
+                    {
+                        break;
+                    }
                 }
             }
             
@@ -102,7 +106,8 @@ void loop()
             testReport.y = y;
         }
     }
-    else if (fingers_touching == 0)
+    else
+    if (fingers_touching == 0)
     {
         testReport.x = usb_x;
         testReport.y = usb_y;
