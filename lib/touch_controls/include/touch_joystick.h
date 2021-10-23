@@ -42,7 +42,7 @@ class TouchJoystick
     void setInvertX(bool invert_x = true);
     void setInvertY(bool invert_y = true);
 
-    uint8_t touch(int32_t tx, int32_t ty, int16_t* rx = NULL, int16_t* ry = NULL);
+    int8_t touch(int32_t tx, int32_t ty, int16_t* rx = NULL, int16_t* ry = NULL);
 
     int16_t getX() {return x;}
     int16_t getY() {return y;}

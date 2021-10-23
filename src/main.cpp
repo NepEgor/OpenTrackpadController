@@ -23,9 +23,9 @@ const uint8_t CLOCK_PIN_left = PB6;
 // y_max 1872
 const int32_t pos_x = 31.25 * 1872.0 / 62.5;
 const int32_t pos_y = (103.9 - 31.25) * 3276.0 / 103.9;
-const int32_t pos_r = 60 * 1872.0 / 62.5 / 2;
+const int32_t pos_r = 70 * 1872.0 / 62.5 / 2;
 const int32_t dead_zone_inner = 3 * 1872.0 / 62.5 / 2;
-const int32_t dead_zone_outer = 20 * 1872.0 / 62.5 / 2;
+const int32_t dead_zone_outer = 25 * 1872.0 / 62.5 / 2;
 const int16_t usb_x = 512;
 const int16_t usb_y = 512;
 const int16_t usb_r = 512;
@@ -89,7 +89,15 @@ void loop()
         if (fp != NULL)
         {
             int16_t x, y;
-            tjoystick.touch(fp[0].y, fp[0].x, &x, &y);
+            
+            for (uint8_t id = 0; id < TrackPad::fingers_num; ++id)
+            {
+                if (tjoystick.touch(fp[id].y, fp[id].x, &x, &y))
+                {
+                    break;
+                }
+            }
+            
             testReport.x = x;
             testReport.y = y;
         }
@@ -104,7 +112,7 @@ void loop()
 
     //device.move(testReport.x, testReport.y);
 
-    HID_Custom_sendReport((uint8_t*)(&testReport), 6);
+    HID_Custom_sendReport((uint8_t*)(&testReport), sizeof(testReport));
 
     //delay(100);
 }

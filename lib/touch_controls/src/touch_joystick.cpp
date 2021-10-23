@@ -48,9 +48,9 @@ void TouchJoystick::setInvertY(bool invert_y)
     this->invert_y = invert_y;
 }
 
-uint8_t TouchJoystick::touch(int32_t tx, int32_t ty, int16_t* rx, int16_t* ry)
+int8_t TouchJoystick::touch(int32_t tx, int32_t ty, int16_t* rx, int16_t* ry)
 {   
-    uint8_t ret = 0;
+    uint8_t ret = 1;
 
     tx -= pos_x;
     ty -= pos_y;
@@ -63,7 +63,7 @@ uint8_t TouchJoystick::touch(int32_t tx, int32_t ty, int16_t* rx, int16_t* ry)
         x = usb_x;
         y = usb_y;
 
-        ret = -1;
+        ret = 0;
     }
     else // between dead zones
     if (t2 <= dead_zone_outer2)
