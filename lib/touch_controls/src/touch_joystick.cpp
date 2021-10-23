@@ -55,7 +55,7 @@ void TouchJoystick::setInvertY(bool invert_y)
 
 int8_t TouchJoystick::touch(int32_t tx, int32_t ty, int16_t* rx, int16_t* ry)
 {   
-    uint8_t ret = 2;
+    int8_t ret = 2;
 
     tx -= pos_x;
     ty -= pos_y;
