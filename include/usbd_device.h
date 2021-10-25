@@ -3,31 +3,39 @@
 
 #include <Arduino.h>
 
-#define MOUSE_LEFT 1
-#define MOUSE_RIGHT 2
-#define MOUSE_MIDDLE 4
-#define MOUSE_ALL (MOUSE_LEFT | MOUSE_RIGHT | MOUSE_MIDDLE)
+#include "touch_controls_all.h"
 
 class USBD_Device
 {
     private:
-        uint8_t _buttons;
+        // 0 - right bumper
+        // 1 - left bumper
+        // 2 - right trigger full
+        // 3 - left trigger full
+        // 4 - right trackpad
+        // 5 - left trackpad
+        // 6 - right front grip
+        // 7 - right rear grip
+        // 8 - left front grip
+        // 9 - left rear grip
+        uint16_t button_map[10];
 
-        void buttons(uint8_t b);
+        // Trackpads
+        // 0 - right, 1 - left
+        TouchJoystick* tjoystick[2];
+        TouchDpad* tdpad[2];
+        
+        // TODO triggers
 
     public:
-        USBD_Device(void);
+        USBD_Device();
 
-        void begin(void);
-        void end(void);
+        void begin();
+        void end();
 
-        void click(uint8_t b = MOUSE_LEFT);
+        void addTouchJoystick(TouchJoystick* tjoystick);
+        void addTouchDpad(TouchDpad* tdpad);
 
-        void move(signed char x, signed char y, signed char wheel = 0);
-        
-        void press(uint8_t b = MOUSE_LEFT);   // press LEFT by default
-        void release(uint8_t b = MOUSE_LEFT); // release LEFT by default
-        bool isPressed(uint8_t b = MOUSE_LEFT); // check LEFT by default
 };
 
 #endif

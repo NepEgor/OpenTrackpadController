@@ -1,8 +1,9 @@
 #include <Arduino.h>
 
-#include "usbd_hid_custom_if.h"
+//#include "usbd_hid_custom_if.h"
 
-//USBD_Device device;
+#include "usbd_device.h"
+USBD_Device device;
 
 #include "trackpad.h"
 TrackPad trackpad_right(0);
@@ -18,13 +19,17 @@ const uint8_t CLOCK_PIN_right = PB8;
 const uint8_t DATA_PIN_left  = PB7;
 const uint8_t CLOCK_PIN_left = PB6;
 
-#include "touch_controls.h"
-TouchJoystick tjoystick;
+#include "touch_controls_all.h"
+TouchJoystick tjoystick_right;
+TouchJoystick tjoystick_left;
+TouchDpad tdpad_right;
+TouchDpad tdpad_left;
 
 const int16_t usb_x = 512;
 const int16_t usb_y = 512;
 const int16_t usb_r = 512;
 
+/*
 typedef struct
 {
     int16_t x:16;
@@ -33,7 +38,7 @@ typedef struct
 } __packed TestReport_t;
 
 TestReport_t testReport;
-
+*/
 void setup()
 {
     // Turn on LED
@@ -48,6 +53,10 @@ void setup()
     attachInterrupt(CLOCK_PIN_right, int_touchpad_right, FALLING);
     trackpad_right.initialize(CLOCK_PIN_right, DATA_PIN_right);
 
+    attachInterrupt(CLOCK_PIN_left, int_touchpad_left, FALLING);
+    trackpad_left.initialize(CLOCK_PIN_left, DATA_PIN_left);
+
+    /*
     float ppmX = trackpad_right.getMaxY() / 62.5;
     float ppmY = trackpad_right.getMaxX() / 103.9;
     int32_t pos_x = 31.25 * ppmX;
@@ -64,9 +73,9 @@ void setup()
     testReport = { 0, 0, 0 };
 
     HID_Custom_Init();
+    */
 
-    //attachInterrupt(CLOCK_PIN_left, int_touchpad_left, FALLING);
-    //trackpad_left.initialize(CLOCK_PIN_left, DATA_PIN_left);
+    device.begin();
 
     // Turn off LED
     digitalWrite(PC13, HIGH);
@@ -74,7 +83,7 @@ void setup()
 
 void loop()
 {
-
+    /*
     uint32_t right_trigger = analogRead(TRIGGER_RIGHT_PIN);
     uint8_t right_tp_click = digitalRead(TRACKPAD_CLICK_RIGHT_PIN);
 
@@ -118,6 +127,6 @@ void loop()
     //device.move(testReport.x, testReport.y);
 
     HID_Custom_sendReport((uint8_t*)(&testReport), sizeof(testReport));
-
+    */
     //delay(100);
 }
