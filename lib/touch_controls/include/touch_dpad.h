@@ -1,45 +1,39 @@
 #ifndef TOUCH_DPAD_H
 #define TOUCH_DPAD_H
 
-#include <stdint.h>
-#include <stddef.h>
+#include "touch_control.h"
 
-class TouchDpad
+class TouchDpad : public TouchControl
 {
     public:
-    enum TouchDpadType
+
+    enum DpadType
     {
-        Sector4,
-        Sector8
+        DPAD_TYPE_SECTOR4,
+        DPAD_TYPE_SECTOR8
     };
 
     private:
 
-    // position of dpad on trackpad
-    int32_t pos_x;
-    int32_t pos_y;
-    int32_t pos_r;
-    int32_t pos_r2; // pos_r ^ 2
-
     int32_t dead_zone_inner;
     int32_t dead_zone_inner2; // ^ 2
 
-    TouchDpadType type;
+    DpadType dpad_type;
 
     uint8_t button;
 
     public:
 
     TouchDpad() {}
-    TouchDpad(int32_t pos_x, int32_t pos_y, int32_t pos_r, TouchDpadType type = Sector4);
+    TouchDpad(int32_t pos_x, int32_t pos_y, int32_t pos_r, DpadType dpad_type = DPAD_TYPE_SECTOR4);
 
-    void init(int32_t pos_x, int32_t pos_y, int32_t pos_r, TouchDpadType type = Sector4);
+    void init(int32_t pos_x, int32_t pos_y, int32_t pos_r, DpadType dpad_type = DPAD_TYPE_SECTOR4);
     
     void setDeadZoneInner(int32_t dead_zone_inner);
 
-    void setType(TouchDpadType type) {this->type = type;}
+    void setType(DpadType dpad_type) {this->dpad_type = dpad_type;}
 
-    uint8_t touch(int32_t tx, int32_t ty);
+    int8_t touch(int32_t tx, int32_t ty);
 
     uint8_t getButton() {return button;}
 };

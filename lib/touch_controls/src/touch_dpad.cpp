@@ -9,22 +9,21 @@
 const float k1 = tanf(PI / 8.f); // tan of 22.5 deg for 8 sector dpad
 const float k2 = 1 / k1;
 
-TouchDpad::TouchDpad(int32_t pos_x, int32_t pos_y, int32_t pos_r, TouchDpadType type)
+TouchDpad::TouchDpad(int32_t pos_x, int32_t pos_y, int32_t pos_r, DpadType dpad_type)
 {
-    init(pos_x, pos_y, pos_r, type);
+    init(pos_x, pos_y, pos_r, dpad_type);
 }
 
-void TouchDpad::init(int32_t pos_x, int32_t pos_y, int32_t pos_r, TouchDpadType type)
+void TouchDpad::init(int32_t pos_x, int32_t pos_y, int32_t pos_r, DpadType dpad_type)
 {
-    this->pos_x = pos_x;
-    this->pos_y = pos_y;
-    this->pos_r = pos_r;
-    this->pos_r2 = pos_r * pos_r;
+    TouchControl::init(pos_x, pos_y, pos_r);
+
+    this->control_type = CT_DPAD;
     
     this->dead_zone_inner = 0;
     this->dead_zone_inner2 = 0;
 
-    this->type = type;
+    this->dpad_type = dpad_type;
 }
 
 void TouchDpad::setDeadZoneInner(int32_t dead_zone_inner)
@@ -33,8 +32,10 @@ void TouchDpad::setDeadZoneInner(int32_t dead_zone_inner)
     this->dead_zone_inner2 = dead_zone_inner * dead_zone_inner;
 }
 
-uint8_t TouchDpad::touch(int32_t tx, int32_t ty)
+int8_t TouchDpad::touch(int32_t tx, int32_t ty)
 {
+    int8_t ret = 2;
+
     tx -= pos_x;
     ty -= pos_y;
 
@@ -42,11 +43,21 @@ uint8_t TouchDpad::touch(int32_t tx, int32_t ty)
 
     int32_t t2 = tx * tx + ty * ty;
 
-    if (t2 >= dead_zone_inner2 && t2 <= pos_r2)
+    // outside the range
+    if (t2 > pos_r2)
     {
-        switch (type)
+        ret = 0;
+    }
+    else // inside inner dead_zone
+    if (t2 < dead_zone_inner2)
+    {
+        ret = 1;
+    }
+    else // in bounds
+    {
+        switch (dpad_type)
         {
-            case Sector4:
+            case DPAD_TYPE_SECTOR4:
                 button |= (ty < tx);
                 button |= (ty < -tx) << 1;
 
@@ -57,7 +68,7 @@ uint8_t TouchDpad::touch(int32_t tx, int32_t ty)
 
                 break;
 
-            case Sector8:
+            case DPAD_TYPE_SECTOR8:
                 button |= (ty < tx * k2);
                 button |= (ty < tx * k1) << 1;
                 button |= (ty < -tx * k1) << 2;
@@ -66,13 +77,14 @@ uint8_t TouchDpad::touch(int32_t tx, int32_t ty)
                 switch (button)
                 {
                     case 0:  button = 1; break;
-                    case 1:  button = 2; break;
-                    case 3:  button = 3; break;
-                    case 7:  button = 4; break;
-                    case 15: button = 5; break;
-                    case 14: button = 6; break;
-                    case 12: button = 7; break;
-                    case 8:  button = 8; break;
+                    case 1:  button = 5; break; // 1 & 2
+                    case 3:  button = 2; break;
+                    case 7:  button = 6; break; // 2 & 3
+                    case 15: button = 3; break;
+                    case 14: button = 7; break; // 3 & 4
+                    case 12: button = 4; break;
+                    case 8:  button = 8; break; // 4 & 1
+                    default: button = 9; break; // error
                 }
 
                 break;
@@ -82,5 +94,5 @@ uint8_t TouchDpad::touch(int32_t tx, int32_t ty)
         }
     }
 
-    return button;
+    return ret;
 }

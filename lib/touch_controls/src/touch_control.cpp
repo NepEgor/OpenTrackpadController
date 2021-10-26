@@ -11,4 +11,6 @@ void TouchControl::init(int32_t pos_x, int32_t pos_y, int32_t pos_r)
     this->pos_y = pos_y;
     this->pos_r = pos_r;
     this->pos_r2 = pos_r * pos_r;
+
+    this->control_type = CT_NONE;
 }

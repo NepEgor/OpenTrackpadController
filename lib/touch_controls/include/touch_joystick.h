@@ -7,14 +7,6 @@ class TouchJoystick : public TouchControl
 {
     public:
 
-    class TouchJoystickReturn : public TouchControl::TouchControlReturn
-    {
-        public:
-        
-        int16_t x;
-        int16_t y;
-    };
-
     private:
 
     int32_t dead_zone_inner;
@@ -47,7 +39,7 @@ class TouchJoystick : public TouchControl
     void setInvertX(bool invert_x = true);
     void setInvertY(bool invert_y = true);
 
-    int8_t touch(int32_t tx, int32_t ty, TouchControlReturn* touch_return);
+    int8_t touch(int32_t tx, int32_t ty);
 
     int16_t getX() {return x;}
     int16_t getY() {return y;}

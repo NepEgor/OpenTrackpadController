@@ -16,42 +16,42 @@ int main()
 
     TouchJoystick tjoystick(pos_x, pos_y, pos_r, usb_x, usb_y, usb_r);
 
-    int32_t touch_x = 150 + 2000;
-    int32_t touch_y = 350 + 0;
+    int32_t touch_x = 150 + 1000;
+    int32_t touch_y = 350 + 20;
 
     int16_t x;
     int16_t y;
 
-    TouchControl::TouchControlReturn touch_return;
     TouchControl* tcontrol = &tjoystick;
 
-    int8_t res = tcontrol->touch(touch_x, touch_y, &touch_return);
+    int8_t res = tcontrol->touch(touch_x, touch_y);
     if (res > 0)
     {
-        switch(touch_return.return_type)
+        switch(tcontrol->getControlType())
         {
-            case TouchControl::TouchControlReturn::RT_NONE:
-                printf("RT_NONE\n");
+            case TouchControl::CT_NONE:
+                printf("CT_NONE\n");
                 break;
 
-            case TouchControl::TouchControlReturn::RT_JOYSTICK:
-                x = ((TouchJoystick::TouchJoystickReturn*)&touch_return)->x;
-                y = ((TouchJoystick::TouchJoystickReturn*)&touch_return)->y;
-                printf("RT_JOYSTICK (%i, %i)\n", x, y);
+            case TouchControl::CT_JOYSTICK:
+
+                x = ((TouchJoystick*)tcontrol)->getX();
+                y = ((TouchJoystick*)tcontrol)->getY();
+
+                printf("CT_JOYSTICK (%i, %i)\n", x, y);
                 break;
         }
     }
     else
     if (res < 0)
     {
-        printf("Pointer Error\n");
+        printf("Impossible Error\n");
     }
     else
     {
         printf("Touch out of bounds\n");
     }
     
-
     printf("\n");
 
     return 0;
