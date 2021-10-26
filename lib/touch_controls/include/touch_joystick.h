@@ -1,25 +1,27 @@
 #ifndef TOUCH_JOYSTICK_H
 #define TOUCH_JOYSTICK_H
 
-#include <stdint.h>
-#include <stddef.h>
+#include "touch_control.h"
 
-class TouchJoystick
+class TouchJoystick : public TouchControl
 {
-    private:
+    public:
 
-    // position of joystick on trackpad
-    int32_t pos_x;
-    int32_t pos_y;
-    int32_t pos_r;
-    int32_t pos_r2; // pos_r ^ 2
+    class TouchJoystickReturn : public TouchControl::TouchControlReturn
+    {
+        public:
+        
+        int16_t x;
+        int16_t y;
+    };
+
+    private:
 
     int32_t dead_zone_inner;
     int32_t dead_zone_inner2; // ^ 2
     int32_t dead_zone_outer;
     int32_t dead_zone_outer2; // ^ 2
 
-    // joystick values for usb report
     int16_t x;
     int16_t y;
 
@@ -45,11 +47,10 @@ class TouchJoystick
     void setInvertX(bool invert_x = true);
     void setInvertY(bool invert_y = true);
 
-    int8_t touch(int32_t tx, int32_t ty, int16_t* rx = NULL, int16_t* ry = NULL);
+    int8_t touch(int32_t tx, int32_t ty, TouchControlReturn* touch_return);
 
     int16_t getX() {return x;}
     int16_t getY() {return y;}
-
 };
 
 #endif

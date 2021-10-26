@@ -9,10 +9,7 @@ TouchJoystick::TouchJoystick(int32_t pos_x, int32_t pos_y, int32_t pos_r, int16_
 
 void TouchJoystick::init(int32_t pos_x, int32_t pos_y, int32_t pos_r, int16_t usb_x, int16_t usb_y, int16_t usb_r)
 {
-    this->pos_x = pos_x;
-    this->pos_y = pos_y;
-    this->pos_r = pos_r;
-    this->pos_r2 = pos_r * pos_r;
+    TouchControl::init(pos_x, pos_y, pos_r);
 
     this->usb_x = usb_x;
     this->usb_y = usb_y;
@@ -53,10 +50,15 @@ void TouchJoystick::setInvertY(bool invert_y)
     this->invert_y = invert_y;
 }
 
-int8_t TouchJoystick::touch(int32_t tx, int32_t ty, int16_t* rx, int16_t* ry)
-{   
-    int8_t ret = 2;
+int8_t TouchJoystick::touch(int32_t tx, int32_t ty, TouchControlReturn* touch_return)
+{  
+    if (touch_return == NULL)
+    {
+        return -1;
+    }
 
+    int8_t ret = 2;
+    
     tx -= pos_x;
     ty -= pos_y;
 
@@ -92,11 +94,9 @@ int8_t TouchJoystick::touch(int32_t tx, int32_t ty, int16_t* rx, int16_t* ry)
     if (invert_x) x = usb_x + usb_r - x;
     if (invert_y) y = usb_y + usb_r - y;
 
-    if (rx != NULL && ry != NULL)
-    {
-        *rx = x;
-        *ry = y;
-    }
+    touch_return->return_type = TouchControlReturn::RT_JOYSTICK;
+    ((TouchJoystickReturn*)touch_return)->x = x;
+    ((TouchJoystickReturn*)touch_return)->y = y;
 
     return ret;
 }
