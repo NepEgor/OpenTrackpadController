@@ -29,7 +29,7 @@ void HID_Custom_DeInit()
     }
 }
 
-void HID_Custom_sendReport(uint8_t *report, uint16_t len)
+void HID_Custom_sendReport(uint8_t* report, uint16_t len)
 {
     USBD_HID_CUSTOM_SendReport(&hUSBD_Device_HID, report, len);
 }
