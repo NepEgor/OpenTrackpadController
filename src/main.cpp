@@ -2,8 +2,8 @@
 
 //#include "usbd_hid_custom_if.h"
 
-#include "usbd_device.h"
-USBD_Device device;
+#include "usb_device.h"
+USB_Device device;
 
 #include "trackpad.h"
 TrackPad trackpad_right(0);
