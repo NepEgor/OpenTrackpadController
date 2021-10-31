@@ -3,11 +3,9 @@
 
 #include <stdint.h>
 
-//#define HID_CUSTOM_REPORT_DESC_SIZE 34U
 #define HID_JOYSTICK_REPORT_DESC_SIZE 89U
 
-// USB Custom Report Descriptor
-//extern uint8_t USBD_HID_CUSTOM_ReportDesc[HID_CUSTOM_REPORT_DESC_SIZE];
+// USB Joystick Report Descriptor
 extern uint8_t USBD_HID_Joystick_ReportDesc[HID_JOYSTICK_REPORT_DESC_SIZE];
 
 struct __attribute__((packed)) USBD_HID_Joystick_Report

@@ -25,6 +25,15 @@ TouchJoystick tjoystick_left;
 TouchDpad tdpad_right;
 TouchDpad tdpad_left;
 
+
+TouchControl* tcontrols[] = 
+{
+    &tjoystick_right,
+    &tdpad_right,
+};
+
+uint8_t num_controls = sizeof(tcontrols) / sizeof(TouchControl*);
+
 void setup()
 {
     // Turn on LED
@@ -57,6 +66,14 @@ void setup()
     tjoystick_right.setInvertX();
     tjoystick_right.setInvertY();
 
+    pos_x = (62.5 - 20.636) * ppmX;
+    pos_y = 20.636 * ppmY;
+    pos_r = 45 * ppmX / 2;
+    tdpad_right.init(pos_x, pos_y, pos_r, TouchDpad::DPAD_TYPE_SECTOR8);
+    tdpad_right.setDeadZoneInner(dead_zone_inner);
+    tdpad_right.setInvertX();
+    tdpad_right.setInvertY();
+
     //tjoystick_left.init(pos_x, pos_y, pos_r, USB_Device::usb_joystick_x, USB_Device::usb_joystick_y, USB_Device::usb_joystick_r);
     //tjoystick_left.setDeadZoneInner(dead_zone_inner);
     //tjoystick_left.setDeadZoneOuter(dead_zone_outer);
@@ -78,48 +95,48 @@ void loop()
     {
         if (fp != NULL)
         {
-            for (uint8_t id = 0; id < TrackPad::fingers_num; ++id)
+            for (int8_t id = 0; id < TrackPad::fingers_num; ++id)
             {
                 if (fingers_touching & (1 << id))
                 {
-                    int8_t res = tjoystick_right.touch(fp[id].y, fp[id].x);
-                    if (res > 0)
+                    for (uint8_t c = 0; c < num_controls; ++c)
                     {
-                        switch(tjoystick_right.getControlType())
+                        int8_t res = tcontrols[c]->touch(fp[id].y, fp[id].x);
+                        if (res < 0)
+                        {
+                            Serial.printf("Impossible Error\n");
+                            break;
+                        }
+                        
+                        switch(tcontrols[c]->getControlType())
                         {
                             case TouchControl::CT_NONE:
-                                
+                                Serial.printf("Control type not set\n");
                                 break;
 
                             case TouchControl::CT_JOYSTICK:
-
-                                int16_t x = tjoystick_right.getX();
-                                int16_t y = tjoystick_right.getY();
-                                device.joystick_left(x, y);
-
-                                Serial.printf("(%i, %i) (%i, %i)\n", fp[id].x, fp[id].y, x, y);
-
+                                device.joystick_left(((TouchJoystick*)tcontrols[c])->getX(), ((TouchJoystick*)tcontrols[c])->getY());
+                                break;
+                            
+                            case TouchControl::CT_DPAD:
+                                device.dpad(((TouchDpad*)tcontrols[c])->getButton());
                                 break;
                         }
-                    }
-                    else
-                    if (res < 0)
-                    {
-                        Serial.printf("Impossible Error\n");
-                    }
-                    else
-                    {
-                        device.joystick_left(USB_Device::usb_joystick_x, USB_Device::usb_joystick_y);
+
+                        if (res > 0)
+                        {
+                            break;
+                        }
                     }
                 }
             }
-            
         }
     }
     else
     if (fingers_touching == 0)
     {
         device.joystick_left(USB_Device::usb_joystick_x, USB_Device::usb_joystick_y);
+        device.dpad(TouchDpad::NOT_PRESSED);
     }
 
     device.trigger_right(right_trigger);
