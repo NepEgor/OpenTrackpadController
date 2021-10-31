@@ -1,8 +1,8 @@
 #include "usbd_descriptors.h"
 
-#include "usbd_def.h"
+#include "usbd_report.h"
 
-#include "hid_def.h"
+#include "usbd_def.h"
 
 // USB HID device FS Configuration Descriptor
 __ALIGN_BEGIN uint8_t USBD_HID_CUSTOM_CfgFSDesc[USB_HID_CUSTOM_CONFIG_DESC_SIZ]  __ALIGN_END = {
@@ -36,7 +36,7 @@ __ALIGN_BEGIN uint8_t USBD_HID_CUSTOM_CfgFSDesc[USB_HID_CUSTOM_CONFIG_DESC_SIZ] 
     0x00,         //bCountryCode: Hardware target country
     0x01,         //bNumDescriptors: Number of HID class descriptors to follow
     0x22,         //bDescriptorType
-    HID_CUSTOM_REPORT_DESC_SIZE,//wItemLength: Total length of Report descriptor
+    HID_JOYSTICK_REPORT_DESC_SIZE,//wItemLength: Total length of Report descriptor
     0x00,
     //******************* Descriptor of Mouse endpoint *******************
     // 27 
@@ -82,7 +82,7 @@ __ALIGN_BEGIN uint8_t USBD_HID_CUSTOM_CfgHSDesc[USB_HID_CUSTOM_CONFIG_DESC_SIZ] 
     0x00,         //bCountryCode: Hardware target country
     0x01,         //bNumDescriptors: Number of HID class descriptors to follow
     0x22,         //bDescriptorType
-    HID_CUSTOM_REPORT_DESC_SIZE,//wItemLength: Total length of Report descriptor
+    HID_JOYSTICK_REPORT_DESC_SIZE,//wItemLength: Total length of Report descriptor
     0x00,
     //******************* Descriptor of Mouse endpoint *******************
     // 27 
@@ -128,7 +128,7 @@ __ALIGN_BEGIN uint8_t USBD_HID_CUSTOM_OtherSpeedCfgDesc[USB_HID_CUSTOM_CONFIG_DE
     0x00,         //bCountryCode: Hardware target country
     0x01,         //bNumDescriptors: Number of HID class descriptors to follow
     0x22,         //bDescriptorType
-    HID_CUSTOM_REPORT_DESC_SIZE,//wItemLength: Total length of Report descriptor
+    HID_JOYSTICK_REPORT_DESC_SIZE,//wItemLength: Total length of Report descriptor
     0x00,
     //******************* Descriptor of Mouse endpoint *******************
     // 27 
@@ -151,7 +151,7 @@ __ALIGN_BEGIN uint8_t USBD_HID_CUSTOM_Desc[USB_HID_CUSTOM_DESC_SIZ]  __ALIGN_END
     0x00,         //bCountryCode: Hardware target country
     0x01,         //bNumDescriptors: Number of HID class descriptors to follow
     0x22,         //bDescriptorType
-    HID_CUSTOM_REPORT_DESC_SIZE,//wItemLength: Total length of Report descriptor
+    HID_JOYSTICK_REPORT_DESC_SIZE,//wItemLength: Total length of Report descriptor
     0x00
 };
 
@@ -167,24 +167,4 @@ __ALIGN_BEGIN uint8_t USBD_HID_DeviceQualifierDesc[USB_LEN_DEV_QUALIFIER_DESC]  
     0x40,
     0x01,
     0x00,
-};
-
-__ALIGN_BEGIN uint8_t HID_CUSTOM_ReportDesc[HID_CUSTOM_REPORT_DESC_SIZE]  __ALIGN_END = {
-	HID_USAGE_PAGE(GENERIC_DESKTOP),
-		HID_USAGE(JOYSTICK),
-		HID_COLLECTION(APPLICATION),
-			HID_COLLECTION(PHYSICAL),
-				HID_USAGE_PAGE(GENERIC_DESKTOP),
-				HID_USAGE(X),
-				HID_USAGE(Y),
-				HID_USAGE(Z),
-				HID_LOGICAL_MINIMUM(1, 0),
-				HID_LOGICAL_MAXIMUM(2, 1024),
-                HID_PHYSICAL_MINIMUM(1, 0),
-				HID_PHYSICAL_MAXIMUM(2, 1024),
-				HID_REPORT_SIZE(16),
-				HID_REPORT_COUNT(3),
-				HID_INPUT(DATA, VARIABLE, ABSOLUTE),
-			HID_END_COLLECTION(PHYSICAL),
-		HID_END_COLLECTION(APPLICATION)
 };

@@ -2,12 +2,13 @@
 #include "usbd_ctlreq.h"
 
 #include "usbd_descriptors.h"
+#include "usbd_report.h"
 
 static uint8_t USBD_HID_Init(USBD_HandleTypeDef* pdev, uint8_t cfgidx);
 static uint8_t USBD_HID_DeInit(USBD_HandleTypeDef* pdev, uint8_t cfgidx);
 
 static uint8_t USBD_CUSTOM_HID_Setup(USBD_HandleTypeDef* pdev, USBD_SetupReqTypedef* req);
-static uint8_t USBD_HID_MOUSE_Setup(USBD_HandleTypeDef* pdev, USBD_SetupReqTypedef* req);
+static uint8_t USBD_HID_JOYSTICK_Setup(USBD_HandleTypeDef* pdev, USBD_SetupReqTypedef* req);
 
 static uint8_t* USBD_HID_GetFSCfgDesc(uint16_t* length);
 static uint8_t* USBD_HID_GetHSCfgDesc(uint16_t* length);
@@ -93,11 +94,11 @@ static uint8_t USBD_CUSTOM_HID_Setup(USBD_HandleTypeDef* pdev, USBD_SetupReqType
     //}
     //else
     //{
-    return USBD_HID_MOUSE_Setup(pdev, req);
+    return USBD_HID_JOYSTICK_Setup(pdev, req);
     //}
 }
 
-static uint8_t USBD_HID_MOUSE_Setup(USBD_HandleTypeDef* pdev, USBD_SetupReqTypedef* req)
+static uint8_t USBD_HID_JOYSTICK_Setup(USBD_HandleTypeDef* pdev, USBD_SetupReqTypedef* req)
 {
     USBD_HID_HandleTypeDef* hhid = (USBD_HID_HandleTypeDef*)pdev->pClassData;
     uint16_t len = 0U;
@@ -151,8 +152,8 @@ static uint8_t USBD_HID_MOUSE_Setup(USBD_HandleTypeDef* pdev, USBD_SetupReqTyped
                 case USB_REQ_GET_DESCRIPTOR:
                     if (req->wValue >> 8 == HID_REPORT_DESC)
                     {
-                        len = MIN(HID_CUSTOM_REPORT_DESC_SIZE, req->wLength);
-                        pbuf = HID_CUSTOM_ReportDesc;
+                        len = MIN(HID_JOYSTICK_REPORT_DESC_SIZE, req->wLength);
+                        pbuf = USBD_HID_Joystick_ReportDesc;
                     }
                     else if (req->wValue >> 8 == HID_DESCRIPTOR_TYPE)
                     {

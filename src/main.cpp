@@ -25,20 +25,6 @@ TouchJoystick tjoystick_left;
 TouchDpad tdpad_right;
 TouchDpad tdpad_left;
 
-const int16_t usb_x = 512;
-const int16_t usb_y = 512;
-const int16_t usb_r = 512;
-
-/*
-typedef struct
-{
-    int16_t x:16;
-    int16_t y:16;
-    int16_t r:16;
-} __packed TestReport_t;
-
-TestReport_t testReport;
-*/
 void setup()
 {
     // Turn on LED
@@ -49,14 +35,14 @@ void setup()
 
     pinMode(TRIGGER_RIGHT_PIN, INPUT_ANALOG);
     pinMode(TRACKPAD_CLICK_RIGHT_PIN, INPUT_PULLDOWN);
-
+    
     attachInterrupt(CLOCK_PIN_right, int_touchpad_right, FALLING);
     trackpad_right.initialize(CLOCK_PIN_right, DATA_PIN_right);
 
-    attachInterrupt(CLOCK_PIN_left, int_touchpad_left, FALLING);
-    trackpad_left.initialize(CLOCK_PIN_left, DATA_PIN_left);
-
-    /*
+    //attachInterrupt(CLOCK_PIN_left, int_touchpad_left, FALLING);
+    //trackpad_left.initialize(CLOCK_PIN_left, DATA_PIN_left);
+    
+    
     float ppmX = trackpad_right.getMaxY() / 62.5;
     float ppmY = trackpad_right.getMaxX() / 103.9;
     int32_t pos_x = 31.25 * ppmX;
@@ -64,16 +50,16 @@ void setup()
     int32_t pos_r = 70 * ppmX / 2;
     int32_t dead_zone_inner = 3 * ppmX;
     int32_t dead_zone_outer = 13 * ppmX;
-    tjoystick.init(pos_x, pos_y, pos_r, usb_x, usb_y, usb_r);
 
-    tjoystick.setDeadZoneInner(dead_zone_inner);
-    tjoystick.setDeadZoneOuter(dead_zone_outer);
-    tjoystick.setInvertY(true);
+    tjoystick_right.init(pos_x, pos_y, pos_r, USB_Device::usb_joystick_x, USB_Device::usb_joystick_y, USB_Device::usb_joystick_r);
+    tjoystick_right.setDeadZoneInner(dead_zone_inner);
+    tjoystick_right.setDeadZoneOuter(dead_zone_outer);
+    tjoystick_right.setInvertX();
+    tjoystick_right.setInvertY();
 
-    testReport = { 0, 0, 0 };
-
-    HID_Custom_Init();
-    */
+    //tjoystick_left.init(pos_x, pos_y, pos_r, USB_Device::usb_joystick_x, USB_Device::usb_joystick_y, USB_Device::usb_joystick_r);
+    //tjoystick_left.setDeadZoneInner(dead_zone_inner);
+    //tjoystick_left.setDeadZoneOuter(dead_zone_outer);
 
     device.begin();
 
@@ -83,50 +69,61 @@ void setup()
 
 void loop()
 {
-    /*
     uint32_t right_trigger = analogRead(TRIGGER_RIGHT_PIN);
     uint8_t right_tp_click = digitalRead(TRACKPAD_CLICK_RIGHT_PIN);
 
-    //Serial.printf("RT: %u RTPC: %u\n", right_trigger, right_tp_click);
-    
-    testReport.r = (int16_t)(right_trigger % 1024);
-
     FingerPosition* fp;
     int8_t fingers_touching = trackpad_right.poll(&fp);
-    
     if (fingers_touching > 0)
     {
         if (fp != NULL)
         {
-            int16_t x, y;
-            
-            for (int8_t id = 0; id < TrackPad::fingers_num; ++id)
+            for (uint8_t id = 0; id < TrackPad::fingers_num; ++id)
             {
                 if (fingers_touching & (1 << id))
                 {
-                    if (tjoystick.touch(fp[id].y, fp[id].x, &x, &y))
+                    int8_t res = tjoystick_right.touch(fp[id].y, fp[id].x);
+                    if (res > 0)
                     {
-                        break;
+                        switch(tjoystick_right.getControlType())
+                        {
+                            case TouchControl::CT_NONE:
+                                
+                                break;
+
+                            case TouchControl::CT_JOYSTICK:
+
+                                int16_t x = tjoystick_right.getX();
+                                int16_t y = tjoystick_right.getY();
+                                device.joystick_left(x, y);
+
+                                Serial.printf("(%i, %i) (%i, %i)\n", fp[id].x, fp[id].y, x, y);
+
+                                break;
+                        }
+                    }
+                    else
+                    if (res < 0)
+                    {
+                        Serial.printf("Impossible Error\n");
+                    }
+                    else
+                    {
+                        device.joystick_left(USB_Device::usb_joystick_x, USB_Device::usb_joystick_y);
                     }
                 }
             }
             
-            testReport.x = x;
-            testReport.y = y;
         }
     }
     else
     if (fingers_touching == 0)
     {
-        testReport.x = usb_x;
-        testReport.y = usb_y;
+        device.joystick_left(USB_Device::usb_joystick_x, USB_Device::usb_joystick_y);
     }
 
-    //Serial.printf("%u %u %u\n", testReport.x, testReport.y, testReport.r);
+    device.trigger_right(right_trigger);
+    device.button(0, right_tp_click);
 
-    //device.move(testReport.x, testReport.y);
-
-    HID_Custom_sendReport((uint8_t*)(&testReport), sizeof(testReport));
-    */
-    //delay(100);
+    device.sendReport();
 }
