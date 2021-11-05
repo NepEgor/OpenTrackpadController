@@ -22,6 +22,8 @@ class TouchControl
 
     ControlType control_type;
 
+    int8_t finger_id;
+
     public:
 
     TouchControl() {}
@@ -29,7 +31,7 @@ class TouchControl
 
     virtual void init(int32_t pos_x, int32_t pos_y, int32_t pos_r);
 
-    virtual int8_t touch(int32_t tx, int32_t ty) = 0;
+    virtual int8_t touch(int8_t fid, int32_t tx, int32_t ty) = 0;
 
     ControlType getControlType() {return control_type;}
 };
