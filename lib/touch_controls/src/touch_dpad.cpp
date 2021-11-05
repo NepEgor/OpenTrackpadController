@@ -45,8 +45,13 @@ void TouchDpad::setInvertY(bool invert_y)
     this->invert_y = invert_y ? -1 : 1;
 }
 
-int8_t TouchDpad::touch(int32_t tx, int32_t ty)
+int8_t TouchDpad::touch(int8_t fid, int32_t tx, int32_t ty)
 {
+    if (finger_id != -1 && finger_id != fid)
+    {
+        return 0;
+    }
+
     int8_t ret = 2;
 
     tx -= pos_x;
@@ -59,61 +64,66 @@ int8_t TouchDpad::touch(int32_t tx, int32_t ty)
     // outside the range
     if (t2 > pos_r2)
     {
-        ret = 0;
+        finger_id = -1;
+        return 0;
     }
     else // inside inner dead_zone
-    if (t2 < dead_zone_inner2)
     {
-        ret = 1;
-    }
-    else // in bounds
-    {
-        button = 0;
-        
-        switch (dpad_type)
+        finger_id = fid;
+
+        if (t2 < dead_zone_inner2)
         {
-            case DPAD_TYPE_SECTOR4:
-                button |= (invert_y * ty > invert_x * -tx);
-                button |= (invert_y * ty > invert_x *  tx) << 1;
+            ret = 1;
+        }
+        else // in bounds
+        {
+            button = 0;
+            
+            switch (dpad_type)
+            {
+                case DPAD_TYPE_SECTOR4:
+                    button |= (invert_y * ty > invert_x * -tx);
+                    button |= (invert_y * ty > invert_x *  tx) << 1;
 
-                switch (button)
-                {
-                    case 0b00: button = 0; break;
-                    case 0b01: button = 2; break;
-                    case 0b11: button = 4; break;
-                    case 0b10: button = 6; break;
-                    
-                    default: button = NOT_PRESSED; break;
-                }
+                    switch (button)
+                    {
+                        case 0b00: button = 0; break;
+                        case 0b01: button = 2; break;
+                        case 0b11: button = 4; break;
+                        case 0b10: button = 6; break;
+                        
+                        default: button = NOT_PRESSED; break;
+                    }
 
-                break;
+                    break;
 
-            case DPAD_TYPE_SECTOR8:
-                button |= (invert_y * ty > invert_x * -tx * k2);
-                button |= (invert_y * ty > invert_x * -tx * k1) << 1;
-                button |= (invert_y * ty > invert_x *  tx * k1) << 2;
-                button |= (invert_y * ty > invert_x *  tx * k2) << 3;
+                case DPAD_TYPE_SECTOR8:
+                    button |= (invert_y * ty > invert_x * -tx * k2);
+                    button |= (invert_y * ty > invert_x * -tx * k1) << 1;
+                    button |= (invert_y * ty > invert_x *  tx * k1) << 2;
+                    button |= (invert_y * ty > invert_x *  tx * k2) << 3;
 
-                switch (button)
-                {
-                    case 0:  button = 0; break;
-                    case 1:  button = 1; break;
-                    case 3:  button = 2; break;
-                    case 7:  button = 3; break;
-                    case 15: button = 4; break;
-                    case 14: button = 5; break;
-                    case 12: button = 6; break;
-                    case 8:  button = 7; break;
-                    
-                    default: button = NOT_PRESSED; break;
-                }
+                    switch (button)
+                    {
+                        case 0:  button = 0; break;
+                        case 1:  button = 1; break;
+                        case 3:  button = 2; break;
+                        case 7:  button = 3; break;
+                        case 15: button = 4; break;
+                        case 14: button = 5; break;
+                        case 12: button = 6; break;
+                        case 8:  button = 7; break;
+                        
+                        default: button = NOT_PRESSED; break;
+                    }
 
-                break;
+                    break;
 
-            default:
-                break;
+                default:
+                    break;
+            }
         }
     }
-
+    
     return ret;
 }

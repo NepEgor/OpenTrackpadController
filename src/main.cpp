@@ -84,60 +84,73 @@ void setup()
     digitalWrite(PC13, HIGH);
 }
 
+uint8_t tevent_size;
+TouchEvent tevent[5];
+
 void loop()
 {
-    uint32_t right_trigger = analogRead(TRIGGER_RIGHT_PIN);
-    uint8_t right_tp_click = digitalRead(TRACKPAD_CLICK_RIGHT_PIN);
-
-    FingerPosition* fp;
-    int8_t fingers_touching = trackpad_right.poll(&fp);
-    if (fingers_touching > 0)
+    int8_t ret = trackpad_right.poll(tevent, tevent_size);
+    
+    if (ret > 0)
     {
-        if (fp != NULL)
+        for (uint8_t i = 0; i < tevent_size; ++i)
         {
-            for (int8_t id = 0; id < TrackPad::fingers_num; ++id)
+            int32_t x = -1;
+            int32_t y = -1;
+            switch (tevent[i].type)
             {
-                if (fingers_touching & (1 << id))
+                case TET_DOWN:
+                case TET_MOVE:
+
+                    x = tevent[i].fp.x;
+                    y = tevent[i].fp.y;
+
+                    break;
+                
+                case TET_UP:
+
+                    break;
+
+                default:
+                    break;
+            }
+
+            //Serial.printf("%u\n", tevent[i].type);
+
+            for (uint8_t c = 0; c < num_controls; ++c)
+            {
+                int8_t res = tcontrols[c]->touch(tevent[i].finger_id, y, x);
+                if (res < 0)
                 {
-                    for (uint8_t c = 0; c < num_controls; ++c)
-                    {
-                        int8_t res = tcontrols[c]->touch(fp[id].y, fp[id].x);
-                        if (res < 0)
-                        {
-                            Serial.printf("Impossible Error\n");
-                            break;
-                        }
-                        
-                        switch(tcontrols[c]->getControlType())
-                        {
-                            case TouchControl::CT_NONE:
-                                Serial.printf("Control type not set\n");
-                                break;
+                    Serial.printf("Impossible Error\n");
+                    break;
+                }
+                
+                switch(tcontrols[c]->getControlType())
+                {
+                    case TouchControl::CT_NONE:
+                        Serial.printf("Control type not set\n");
+                        break;
 
-                            case TouchControl::CT_JOYSTICK:
-                                device.joystick_left(((TouchJoystick*)tcontrols[c])->getX(), ((TouchJoystick*)tcontrols[c])->getY());
-                                break;
-                            
-                            case TouchControl::CT_DPAD:
-                                device.dpad(((TouchDpad*)tcontrols[c])->getButton());
-                                break;
-                        }
+                    case TouchControl::CT_JOYSTICK:
+                        device.joystick_left(((TouchJoystick*)tcontrols[c])->getX(), ((TouchJoystick*)tcontrols[c])->getY());
+                        break;
+                    
+                    case TouchControl::CT_DPAD:
+                        device.dpad(((TouchDpad*)tcontrols[c])->getButton());
+                        break;
+                }
 
-                        if (res > 0)
-                        {
-                            break;
-                        }
-                    }
+                if (res > 0)
+                {
+                    break;
                 }
             }
         }
     }
-    else
-    if (fingers_touching == 0)
-    {
-        device.joystick_left(USB_Device::usb_joystick_x, USB_Device::usb_joystick_y);
-        device.dpad(TouchDpad::NOT_PRESSED);
-    }
+
+    uint32_t right_trigger = analogRead(TRIGGER_RIGHT_PIN);
+    uint8_t right_tp_click = digitalRead(TRACKPAD_CLICK_RIGHT_PIN);
 
     device.trigger_right(right_trigger);
     device.button(0, right_tp_click);

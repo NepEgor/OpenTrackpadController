@@ -41,7 +41,7 @@ class TouchDpad : public TouchControl
     void setInvertX(bool invert_x = true);
     void setInvertY(bool invert_y = true);
 
-    int8_t touch(int32_t tx, int32_t ty);
+    int8_t touch(int8_t fid, int32_t tx, int32_t ty);
 
     uint8_t getButton() {return button;}
 };
