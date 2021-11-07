@@ -21,6 +21,11 @@ void USB_Device::end()
     HID_Custom_DeInit();
 }
 
+void USB_Device::buttons(uint32_t buttons)
+{
+    report.buttons = buttons;
+}
+
 void USB_Device::button(uint8_t button, bool val)
 {
     if (val)

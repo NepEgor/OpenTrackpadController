@@ -80,12 +80,17 @@ void setup()
 
     device.begin();
 
+    device.trigger_right(511);
+    device.trigger_left(511);
+
     // Turn off LED
     digitalWrite(PC13, HIGH);
 }
 
 uint8_t tevent_size;
 TouchEvent tevent[5];
+
+uint32_t buttons = 1;
 
 void loop()
 {
@@ -134,6 +139,9 @@ void loop()
 
                     case TouchControl::CT_JOYSTICK:
                         device.joystick_left(((TouchJoystick*)tcontrols[c])->getX(), ((TouchJoystick*)tcontrols[c])->getY());
+                        //device.joystick_right(((TouchJoystick*)tcontrols[c])->getX(), ((TouchJoystick*)tcontrols[c])->getY());
+                        //device.trigger_left(((TouchJoystick*)tcontrols[c])->getX());
+                        //device.trigger_right(((TouchJoystick*)tcontrols[c])->getY());
                         break;
                     
                     case TouchControl::CT_DPAD:
@@ -152,8 +160,16 @@ void loop()
     uint32_t right_trigger = analogRead(TRIGGER_RIGHT_PIN);
     uint8_t right_tp_click = digitalRead(TRACKPAD_CLICK_RIGHT_PIN);
 
-    device.trigger_right(right_trigger);
-    device.button(0, right_tp_click);
+    //device.joystick_right(30000, 30000);
+
+    //device.trigger_right(right_trigger);
+    device.button(2, right_tp_click);
+
+    //buttons <<= 1;
+    //if (buttons >= 2048) buttons = 1u;
+
+    //device.buttons(buttons);
+    //delay(500);
 
     device.sendReport();
 }

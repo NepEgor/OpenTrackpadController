@@ -22,6 +22,7 @@ class USB_Device
     void begin();
     void end();
 
+    void buttons(uint32_t buttons);
     void button(uint8_t button, bool val);
 	void dpad(uint8_t dir);
 
