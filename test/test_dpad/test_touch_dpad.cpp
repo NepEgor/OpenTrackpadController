@@ -36,7 +36,7 @@ int main()
     int N = sizeof(t_points) / sizeof(int32_t);
     for (int i = 0; i < N; i += 2)
     {
-        int8_t res = tcontrol->touch(t_points[i], t_points[i + 1]);
+        int8_t res = tcontrol->touch(0, t_points[i], t_points[i + 1]);
 
         if (res > 0)
         {

@@ -47,7 +47,7 @@ int main()
         for (int i = 0; i < num_controls; ++i)
         {
             printf("Touch %i at (%i, %i)  ", i, t_points[j], t_points[j + 1]);
-            int8_t res = tcontrols[i]->touch(t_points[j], t_points[j + 1]);
+            int8_t res = tcontrols[i]->touch(0, t_points[j], t_points[j + 1]);
             if (res > 0)
             {
                 switch(tcontrols[i]->getControlType())

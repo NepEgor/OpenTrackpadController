@@ -13,9 +13,9 @@ class USB_Device
 
     public:
 
-    static const int16_t usb_joystick_x = 511;
-    static const int16_t usb_joystick_y = 511;
-    static const int16_t usb_joystick_r = 511;
+    static const int16_t usb_joystick_x = 0;
+    static const int16_t usb_joystick_y = 0;
+    static const int16_t usb_joystick_r = 0x7FFF;
 
     USB_Device() {}
 
@@ -26,11 +26,11 @@ class USB_Device
     void button(uint8_t button, bool val);
 	void dpad(uint8_t dir);
 
-	void joystick_left(uint16_t x, uint16_t y);
-	void joystick_right(uint16_t x, uint16_t y);
+	void joystick_left(int16_t x, int16_t y);
+	void joystick_right(int16_t x, int16_t y);
 
-	void trigger_left(uint16_t val);
-	void trigger_right(uint16_t val);
+	void trigger_left(uint8_t val);
+	void trigger_right(uint8_t val);
 
     void sendReport();
 };

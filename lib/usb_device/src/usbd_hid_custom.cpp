@@ -11,10 +11,11 @@ static uint8_t USBD_CUSTOM_HID_Setup(USBD_HandleTypeDef* pdev, USBD_SetupReqType
 static uint8_t USBD_HID_JOYSTICK_Setup(USBD_HandleTypeDef* pdev, USBD_SetupReqTypedef* req);
 
 static uint8_t* USBD_HID_GetFSCfgDesc(uint16_t* length);
+/*
 static uint8_t* USBD_HID_GetHSCfgDesc(uint16_t* length);
 static uint8_t* USBD_HID_GetOtherSpeedCfgDesc(uint16_t* length);
 static uint8_t* USBD_HID_GetDeviceQualifierDesc(uint16_t* length);
-
+*/
 static uint8_t USBD_HID_DataIn(USBD_HandleTypeDef* pdev, uint8_t epnum);
 
 USBD_ClassTypeDef USBD_CUSTOM_HID = {
@@ -28,10 +29,10 @@ USBD_ClassTypeDef USBD_CUSTOM_HID = {
     NULL,            //SOF
     NULL,
     NULL,
-    USBD_HID_GetHSCfgDesc,
+    NULL,//USBD_HID_GetHSCfgDesc,
     USBD_HID_GetFSCfgDesc,
-    USBD_HID_GetOtherSpeedCfgDesc,
-    USBD_HID_GetDeviceQualifierDesc,
+    NULL,//USBD_HID_GetOtherSpeedCfgDesc,
+    NULL,//USBD_HID_GetDeviceQualifierDesc,
 };
 
 static uint8_t USBD_HID_Init(USBD_HandleTypeDef* pdev, uint8_t cfgidx)
@@ -85,8 +86,11 @@ static uint8_t USBD_HID_DeInit(USBD_HandleTypeDef* pdev, uint8_t cfgidx)
     return USBD_OK;
 }
 
+#include <Arduino.h>
+
 static uint8_t USBD_CUSTOM_HID_Setup(USBD_HandleTypeDef* pdev, USBD_SetupReqTypedef* req)
 {
+    Serial.printf("usb req %02X %02X %02X\n", req->wIndex, req->bRequest, req->wValue);
     /* Check which interface is targetted by this request */
     //if ((req->wIndex & 0x00FF) == HID_KEYBOARD_INTERFACE)
     //{
@@ -148,7 +152,7 @@ static uint8_t USBD_HID_JOYSTICK_Setup(USBD_HandleTypeDef* pdev, USBD_SetupReqTy
                         ret = USBD_FAIL;
                     }
                     break;
-
+                /*
                 case USB_REQ_GET_DESCRIPTOR:
                     if (req->wValue >> 8 == HID_REPORT_DESC)
                     {
@@ -168,7 +172,7 @@ static uint8_t USBD_HID_JOYSTICK_Setup(USBD_HandleTypeDef* pdev, USBD_SetupReqTy
                     }
                     USBD_CtlSendData(pdev, pbuf, len);
                     break;
-
+                */
                 case USB_REQ_GET_INTERFACE:
                     if (pdev->dev_state == USBD_STATE_CONFIGURED)
                     {
@@ -251,7 +255,7 @@ static uint8_t* USBD_HID_GetFSCfgDesc(uint16_t* length)
     *length = sizeof(USBD_HID_CUSTOM_CfgFSDesc);
     return USBD_HID_CUSTOM_CfgFSDesc;
 }
-
+/*
 static uint8_t* USBD_HID_GetHSCfgDesc(uint16_t* length)
 {
     *length = sizeof(USBD_HID_CUSTOM_CfgHSDesc);
@@ -263,11 +267,11 @@ static uint8_t* USBD_HID_GetOtherSpeedCfgDesc(uint16_t* length)
     *length = sizeof(USBD_HID_CUSTOM_OtherSpeedCfgDesc);
     return USBD_HID_CUSTOM_OtherSpeedCfgDesc;
 }
-
+*/
 static uint8_t USBD_HID_DataIn(USBD_HandleTypeDef* pdev, uint8_t epnum)
 {
-    /* Ensure that the FIFO is empty before a new transfer, this condition could
-    be caused by  a new transfer before the end of the previous transfer */
+    // Ensure that the FIFO is empty before a new transfer, this condition could
+    // be caused by  a new transfer before the end of the previous transfer
     //if (epnum == (HID_KEYBOARD_EPIN_ADDR & 0x7F))
     //{
     //((USBD_HID_HandleTypeDef *)pdev->pClassData)->Keyboardstate = HID_IDLE;
@@ -278,9 +282,10 @@ static uint8_t USBD_HID_DataIn(USBD_HandleTypeDef* pdev, uint8_t epnum)
     //}
     return USBD_OK;
 }
-
+/*
 static uint8_t* USBD_HID_GetDeviceQualifierDesc(uint16_t* length)
 {
     *length = sizeof(USBD_HID_DeviceQualifierDesc);
     return USBD_HID_DeviceQualifierDesc;
 }
+*/

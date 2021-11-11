@@ -25,6 +25,7 @@ __ALIGN_BEGIN uint8_t USBD_HID_CUSTOM_ReportDesc[]  __ALIGN_END = {
 		HID_END_COLLECTION(APPLICATION)
 };
 */
+/*
 __ALIGN_BEGIN uint8_t USBD_HID_Joystick_ReportDesc[]  __ALIGN_END = {
 	HID_USAGE_PAGE(GENERIC_DESKTOP),
 		HID_USAGE(GAME_PAD),
@@ -86,7 +87,7 @@ __ALIGN_BEGIN uint8_t USBD_HID_Joystick_ReportDesc[]  __ALIGN_END = {
             
 		HID_END_COLLECTION(APPLICATION)
 };
-
+*/
 /*
 __ALIGN_BEGIN uint8_t USBD_HID_Joystick_ReportDesc2[]  __ALIGN_END = {
     0x05, 0x01,                    // USAGE_PAGE (Generic Desktop)

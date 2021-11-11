@@ -80,9 +80,6 @@ void setup()
 
     device.begin();
 
-    device.trigger_right(511);
-    device.trigger_left(511);
-
     // Turn off LED
     digitalWrite(PC13, HIGH);
 }
@@ -138,10 +135,9 @@ void loop()
                         break;
 
                     case TouchControl::CT_JOYSTICK:
+                        //Serial.printf("%i, %i\n", ((TouchJoystick*)tcontrols[c])->getX(), ((TouchJoystick*)tcontrols[c])->getY());
                         device.joystick_left(((TouchJoystick*)tcontrols[c])->getX(), ((TouchJoystick*)tcontrols[c])->getY());
-                        //device.joystick_right(((TouchJoystick*)tcontrols[c])->getX(), ((TouchJoystick*)tcontrols[c])->getY());
-                        //device.trigger_left(((TouchJoystick*)tcontrols[c])->getX());
-                        //device.trigger_right(((TouchJoystick*)tcontrols[c])->getY());
+                        device.joystick_right(((TouchJoystick*)tcontrols[c])->getX(), ((TouchJoystick*)tcontrols[c])->getY());
                         break;
                     
                     case TouchControl::CT_DPAD:
@@ -162,7 +158,7 @@ void loop()
 
     //device.joystick_right(30000, 30000);
 
-    //device.trigger_right(right_trigger);
+    device.trigger_right(right_trigger);
     device.button(2, right_tp_click);
 
     //buttons <<= 1;
