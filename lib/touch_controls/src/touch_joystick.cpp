@@ -26,6 +26,9 @@ void TouchJoystick::init(int32_t pos_x, int32_t pos_y, int32_t pos_r, int16_t us
 
     this->invert_x = false;
     this->invert_y = false;
+
+    this->x = usb_x;
+    this->y = usb_y;
 }
 
 void TouchJoystick::setDeadZoneInner(int32_t dead_zone_inner)
@@ -97,8 +100,8 @@ int8_t TouchJoystick::touch(int8_t fid, int32_t tx, int32_t ty)
             y = (ty * dead_zone_outer / len) * pos2usb + usb_y;
         }
 
-        if (invert_x) x = usb_x + usb_r - x;
-        if (invert_y) y = usb_y + usb_r - y;
+        if (invert_x) x = 2 * usb_x - x;
+        if (invert_y) y = 2 * usb_y - y;
     }
     
     return ret;

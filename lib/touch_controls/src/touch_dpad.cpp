@@ -27,6 +27,8 @@ void TouchDpad::init(int32_t pos_x, int32_t pos_y, int32_t pos_r, DpadType dpad_
 
     this->invert_x = 1;
     this->invert_y = 1;
+
+    this->button = 0;
 }
 
 void TouchDpad::setDeadZoneInner(int32_t dead_zone_inner)
@@ -45,6 +47,11 @@ void TouchDpad::setInvertY(bool invert_y)
     this->invert_y = invert_y ? -1 : 1;
 }
 
+#define XINPUT_DPAD_UP    0b0001
+#define XINPUT_DPAD_DOWN  0b0010
+#define XINPUT_DPAD_LEFT  0b0100
+#define XINPUT_DPAD_RIGHT 0b1000
+
 int8_t TouchDpad::touch(int8_t fid, int32_t tx, int32_t ty)
 {
     if (finger_id != -1 && finger_id != fid)
@@ -57,7 +64,7 @@ int8_t TouchDpad::touch(int8_t fid, int32_t tx, int32_t ty)
     tx -= pos_x;
     ty -= pos_y;
 
-    button = NOT_PRESSED;
+    button = 0;
 
     int32_t t2 = tx * tx + ty * ty;
 
@@ -77,8 +84,6 @@ int8_t TouchDpad::touch(int8_t fid, int32_t tx, int32_t ty)
         }
         else // in bounds
         {
-            button = 0;
-            
             switch (dpad_type)
             {
                 case DPAD_TYPE_SECTOR4:
@@ -87,12 +92,12 @@ int8_t TouchDpad::touch(int8_t fid, int32_t tx, int32_t ty)
 
                     switch (button)
                     {
-                        case 0b00: button = 0; break;
-                        case 0b01: button = 2; break;
-                        case 0b11: button = 4; break;
-                        case 0b10: button = 6; break;
+                        case 0b00: button = XINPUT_DPAD_UP;    break;
+                        case 0b01: button = XINPUT_DPAD_RIGHT; break;
+                        case 0b11: button = XINPUT_DPAD_DOWN;  break;
+                        case 0b10: button = XINPUT_DPAD_LEFT;  break;
                         
-                        default: button = NOT_PRESSED; break;
+                        default: button = 0; break;
                     }
 
                     break;
@@ -105,16 +110,16 @@ int8_t TouchDpad::touch(int8_t fid, int32_t tx, int32_t ty)
 
                     switch (button)
                     {
-                        case 0:  button = 0; break;
-                        case 1:  button = 1; break;
-                        case 3:  button = 2; break;
-                        case 7:  button = 3; break;
-                        case 15: button = 4; break;
-                        case 14: button = 5; break;
-                        case 12: button = 6; break;
-                        case 8:  button = 7; break;
+                        case 0:  button = XINPUT_DPAD_UP;                       break;
+                        case 1:  button = XINPUT_DPAD_UP   | XINPUT_DPAD_RIGHT; break;
+                        case 3:  button = XINPUT_DPAD_RIGHT;                    break;
+                        case 7:  button = XINPUT_DPAD_DOWN | XINPUT_DPAD_RIGHT; break;
+                        case 15: button = XINPUT_DPAD_DOWN;                     break;
+                        case 14: button = XINPUT_DPAD_DOWN | XINPUT_DPAD_LEFT;  break;
+                        case 12: button = XINPUT_DPAD_LEFT;                     break;
+                        case 8:  button = XINPUT_DPAD_UP   | XINPUT_DPAD_LEFT;  break;
                         
-                        default: button = NOT_PRESSED; break;
+                        default: button = 0; break;
                     }
 
                     break;

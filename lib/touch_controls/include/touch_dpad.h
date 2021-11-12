@@ -13,8 +13,6 @@ class TouchDpad : public TouchControl
         DPAD_TYPE_SECTOR8
     };
 
-    static const uint8_t NOT_PRESSED = 15;
-
     private:
 
     int32_t dead_zone_inner;
