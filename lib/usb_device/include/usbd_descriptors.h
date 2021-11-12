@@ -4,10 +4,7 @@
 #include <stdint.h>
 
 #define USB_HID_CUSTOM_CONFIG_DESC_SIZ 153U
-#define USB_HID_CUSTOM_DESC_SIZ        9U
-#define USB_LEN_DEV_QUALIFIER_DESC     0x0AU
-
-#define HID_DESCRIPTOR_TYPE            0x21
+#define USB_HID_CUSTOM_DEVICE_DESC_SIZ 18U
 
 #ifndef HID_HS_BINTERVAL
 #define HID_HS_BINTERVAL 0x07U
@@ -21,19 +18,10 @@
 #define HID_CUSTOM_EPIN_ADDR 0x81U
 #define HID_CUSTOM_EPIN_SIZE 0x10U
 
+// USB HID device descriptor
+extern uint8_t USBD_Custom_Class_DeviceDesc[USB_HID_CUSTOM_DEVICE_DESC_SIZ];
+
 // USB HID device FS Configuration Descriptor
 extern uint8_t USBD_HID_CUSTOM_CfgFSDesc[USB_HID_CUSTOM_CONFIG_DESC_SIZ];
-/*
-// USB HID device HS Configuration Descriptor
-extern uint8_t USBD_HID_CUSTOM_CfgHSDesc[USB_HID_CUSTOM_CONFIG_DESC_SIZ];
 
-// USB HID device Other Speed Configuration Descriptor
-extern uint8_t USBD_HID_CUSTOM_OtherSpeedCfgDesc[USB_HID_CUSTOM_CONFIG_DESC_SIZ];
-
-// USB HID device Configuration Descriptor
-extern uint8_t USBD_HID_CUSTOM_Desc[USB_HID_CUSTOM_DESC_SIZ];
-
-// USB Standard Device Descriptor
-extern uint8_t USBD_HID_DeviceQualifierDesc[USB_LEN_DEV_QUALIFIER_DESC];
-*/
 #endif

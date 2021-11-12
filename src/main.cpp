@@ -64,7 +64,7 @@ void setup()
     tjoystick_right.setDeadZoneInner(dead_zone_inner);
     tjoystick_right.setDeadZoneOuter(dead_zone_outer);
     tjoystick_right.setInvertX();
-    tjoystick_right.setInvertY();
+    //tjoystick_right.setInvertY();
 
     pos_x = (62.5 - 20.636) * ppmX;
     pos_y = 20.636 * ppmY;
@@ -159,7 +159,7 @@ void loop()
     //device.joystick_right(30000, 30000);
 
     device.trigger_right(right_trigger);
-    device.button(2, right_tp_click);
+    device.button(7, right_tp_click); // R3
 
     //buttons <<= 1;
     //if (buttons >= 2048) buttons = 1u;

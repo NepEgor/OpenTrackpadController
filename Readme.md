@@ -13,4 +13,4 @@ https://github.com/NepEgor/ps2elantech
 
 Credits:
 * hid_def: https://github.com/katyo/hid_def
-
+* xinput descriptors: https://github.com/zlittell/MSF-XINPUT

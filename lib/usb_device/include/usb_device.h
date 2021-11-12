@@ -9,7 +9,23 @@
 class USB_Device
 {
     private:
-    USBD_HID_Joystick_Report report;
+
+    struct __attribute__((packed)) XinputReport
+    {
+        uint8_t  msg_type:8;        // byte 0
+        uint8_t  msg_len:8;         // byte 1
+
+        uint16_t buttons:16;        // bytes 2 and 3
+        uint8_t  trigger_left:8;    // byte 4
+        uint8_t  trigger_right:8;   // byte 5
+        int16_t  lx:16;             // byte 6
+        int16_t  ly:16;             // byte 7
+        int16_t  rx:16;             // byte 8
+        int16_t  ry:16;             // byte 9
+        
+        //uint32_t unused0:32; // not send due to endpoint size issue
+        //uint16_t unused1:16; // not send due to endpoint size issue
+    } xinput_report;
 
     public:
 
