@@ -12,6 +12,8 @@ const uint8_t pin_trackpad_clock[2] = {PB6, PB8};
 
 TrackPad trackpad[2]; // 0 - left, 1 - right
 
+int32_t trackpad_maxX, trackpad_maxY;
+
 void int_touchpad_0(){trackpad[0].int_on_clock();}
 void int_touchpad_1(){trackpad[1].int_on_clock();}
 
@@ -27,13 +29,14 @@ void setup()
     pinMode(pin_trigger[1], INPUT_ANALOG);
     pinMode(pin_trackpad_click[1], INPUT_PULLDOWN);
     
-    //attachInterrupt(pin_trackpad_clock[0], int_touchpad_0, FALLING);
-    //trackpad[0].initialize(pin_trackpad_clock[0], pin_trackpad_data[0]);
+    attachInterrupt(pin_trackpad_clock[0], int_touchpad_0, FALLING);
+    trackpad[0].initialize(pin_trackpad_clock[0], pin_trackpad_data[0]);
 
     attachInterrupt(pin_trackpad_clock[1], int_touchpad_1, FALLING);
     trackpad[1].initialize(pin_trackpad_clock[1], pin_trackpad_data[1]);
 
-
+    trackpad_maxX = trackpad[0].getMaxX();
+    trackpad_maxY = trackpad[0].getMaxY();
     
     InputMapper::begin();
 
@@ -46,39 +49,56 @@ TouchEvent tevent[5];
 
 void loop()
 {
-    if (trackpad[1].poll(tevent, tevent_size) > 0)
+    for (uint8_t t = 0; t < 2; ++t)
     {
-        for (uint8_t i = 0; i < tevent_size; ++i)
+        if (trackpad[t].poll(tevent, tevent_size) > 0)
         {
-            int32_t x = -1;
-            int32_t y = -1;
-            switch (tevent[i].type)
+            for (uint8_t i = 0; i < tevent_size; ++i)
             {
-                case TET_DOWN:
-                case TET_MOVE:
+                int32_t x = -1;
+                int32_t y = -1;
+                switch (tevent[i].type)
+                {
+                    case TET_DOWN:
+                    case TET_MOVE:
 
-                    x = tevent[i].fp.x;
-                    y = tevent[i].fp.y;
+                         // trackpad is rotated 90 deg so x and y are switched
+                        x = tevent[i].fp.y;
+                        y = tevent[i].fp.x;
+                        
+                        // invert axis for the trackpads
+                        if(t == 0)
+                        {
+                            y = trackpad_maxX - y;
+                        }
+                        else
+                        {
+                            x = trackpad_maxY - x;
+                        }
 
-                    break;
+                        break;
+                    
+                    case TET_UP:
+
+                        break;
+
+                    default:
+                        break;
+                }
                 
-                case TET_UP:
-
-                    break;
-
-                default:
-                    break;
+                InputMapper::mapTrackpad(t, tevent[i].finger_id, x, y);
             }
-
-            InputMapper::mapTrackpad(1, tevent[i].finger_id, y, x); // trackpad is rotated 90 deg so x and y are flipped
         }
     }
-
+    
     uint32_t triggers[] = {0, analogRead(pin_trigger[1])};
+    //Serial.printf("T %u %u\n", triggers[0], triggers[1]);
+
     InputMapper::mapTriggers(triggers);
 
     uint16_t right_tp_click = digitalRead(pin_trackpad_click[1]);
-    InputMapper::mapButtons(right_tp_click << 7); // R3
+    InputMapper::mapButtons(right_tp_click << (5 + 8)); // B
 
     InputMapper::sendReport();
+    
 }

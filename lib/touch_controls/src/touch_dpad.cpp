@@ -92,9 +92,9 @@ int8_t TouchDpad::touch(int8_t fid, int32_t tx, int32_t ty)
 
                     switch (button)
                     {
-                        case 0b00: button = XINPUT_DPAD_UP;    break;
+                        case 0b00: button = XINPUT_DPAD_DOWN;  break;
                         case 0b01: button = XINPUT_DPAD_RIGHT; break;
-                        case 0b11: button = XINPUT_DPAD_DOWN;  break;
+                        case 0b11: button = XINPUT_DPAD_UP;    break;
                         case 0b10: button = XINPUT_DPAD_LEFT;  break;
                         
                         default: button = 0; break;
@@ -110,14 +110,14 @@ int8_t TouchDpad::touch(int8_t fid, int32_t tx, int32_t ty)
 
                     switch (button)
                     {
-                        case 0:  button = XINPUT_DPAD_UP;                       break;
-                        case 1:  button = XINPUT_DPAD_UP   | XINPUT_DPAD_RIGHT; break;
-                        case 3:  button = XINPUT_DPAD_RIGHT;                    break;
-                        case 7:  button = XINPUT_DPAD_DOWN | XINPUT_DPAD_RIGHT; break;
-                        case 15: button = XINPUT_DPAD_DOWN;                     break;
-                        case 14: button = XINPUT_DPAD_DOWN | XINPUT_DPAD_LEFT;  break;
-                        case 12: button = XINPUT_DPAD_LEFT;                     break;
-                        case 8:  button = XINPUT_DPAD_UP   | XINPUT_DPAD_LEFT;  break;
+                        case 0:  button = XINPUT_DPAD_DOWN;                       break;
+                        case 1:  button = XINPUT_DPAD_DOWN   | XINPUT_DPAD_RIGHT; break;
+                        case 3:  button = XINPUT_DPAD_RIGHT;                      break;
+                        case 7:  button = XINPUT_DPAD_UP     | XINPUT_DPAD_RIGHT; break;
+                        case 15: button = XINPUT_DPAD_UP;                         break;
+                        case 14: button = XINPUT_DPAD_UP     | XINPUT_DPAD_LEFT;  break;
+                        case 12: button = XINPUT_DPAD_LEFT;                       break;
+                        case 8:  button = XINPUT_DPAD_DOWN   | XINPUT_DPAD_LEFT;  break;
                         
                         default: button = 0; break;
                     }

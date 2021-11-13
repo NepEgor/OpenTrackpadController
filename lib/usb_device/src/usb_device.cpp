@@ -48,26 +48,23 @@ void USB_Device::dpad(uint8_t dir)
     xinput_report.dpad = dir & 0b1111;
 }
 
-void USB_Device::joystick_left(int16_t x, int16_t y)
+void USB_Device::joystick(uint8_t id, int16_t x, int16_t y)
 {
-    xinput_report.lx = x;
-    xinput_report.ly = y;
+    if (id == 0)
+    {
+        xinput_report.lx = x;
+        xinput_report.ly = y;
+    }
+    else{
+        xinput_report.rx = x;
+        xinput_report.ry = y;
+    }
 }
 
-void USB_Device::joystick_right(int16_t x, int16_t y)
+void USB_Device::triggers(uint8_t values[2])
 {
-    xinput_report.rx = x;
-    xinput_report.ry = y;
-}
-
-void USB_Device::trigger_left(uint8_t val)
-{
-    xinput_report.trigger_left = val & 0xFF;
-}
-
-void USB_Device::trigger_right(uint8_t val)
-{
-    xinput_report.trigger_right = val & 0xFF;
+    xinput_report.trigger_left  = values[0] & 0xFF;
+    xinput_report.trigger_right = values[1] & 0xFF;
 }
 
 void USB_Device::sendReport()

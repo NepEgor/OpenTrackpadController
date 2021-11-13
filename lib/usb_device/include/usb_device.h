@@ -43,11 +43,9 @@ class USB_Device
     void button(uint8_t button, bool val);
 	void dpad(uint8_t dir);
 
-	void joystick_left(int16_t x, int16_t y);
-	void joystick_right(int16_t x, int16_t y);
+	void joystick(uint8_t id, int16_t x, int16_t y);
 
-	void trigger_left(uint8_t val);
-	void trigger_right(uint8_t val);
+	void triggers(uint8_t values[2]);
 
     void sendReport();
 };
