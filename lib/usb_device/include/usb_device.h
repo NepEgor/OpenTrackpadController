@@ -15,7 +15,8 @@ class USB_Device
         uint8_t  msg_type:8;        // byte 0
         uint8_t  msg_len:8;         // byte 1
 
-        uint16_t buttons:16;        // bytes 2 and 3
+        uint8_t  dpad:4;            // byte 2 first nibble
+        uint16_t buttons:12;        // byte 2 second nibble and byte 3
         uint8_t  trigger_left:8;    // byte 4
         uint8_t  trigger_right:8;   // byte 5
         int16_t  lx:16;             // byte 6
@@ -38,7 +39,7 @@ class USB_Device
     void begin();
     void end();
 
-    void buttons(uint32_t buttons);
+    void buttons(uint16_t buttons);
     void button(uint8_t button, bool val);
 	void dpad(uint8_t dir);
 
