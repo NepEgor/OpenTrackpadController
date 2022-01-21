@@ -14,9 +14,6 @@ TrackPad trackpad[2]; // 0 - left, 1 - right
 
 int32_t trackpad_maxX, trackpad_maxY;
 
-void int_touchpad_0(){trackpad[0].int_on_clock();}
-void int_touchpad_1(){trackpad[1].int_on_clock();}
-
 void setup()
 {
     // Turn on LED
@@ -29,10 +26,8 @@ void setup()
     pinMode(pin_trigger[1], INPUT_ANALOG);
     pinMode(pin_trackpad_click[1], INPUT_PULLDOWN);
     
-    attachInterrupt(pin_trackpad_clock[0], int_touchpad_0, FALLING);
     trackpad[0].initialize(pin_trackpad_clock[0], pin_trackpad_data[0]);
 
-    attachInterrupt(pin_trackpad_clock[1], int_touchpad_1, FALLING);
     trackpad[1].initialize(pin_trackpad_clock[1], pin_trackpad_data[1]);
 
     trackpad_maxX = trackpad[0].getMaxX();
