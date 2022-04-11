@@ -3,12 +3,25 @@
 #include "trackpad.h"
 #include "input_mapper.h"
 
-const uint8_t pin_trigger[2] = {0, PA3};
+const uint8_t pin_trigger[2] = {PA0, PA1};
 
-const uint8_t pin_trackpad_click[2] = {0, PB4};
+const uint8_t pin_button[]  =
+{
+    PB12, 0,   // START
+    PB13, 0,   // SELECT
+    PC15, 0,   // TRACKPAD_LEFT
+    PB3,  1,   // TRACKPAD_RIGHT
+    PA2,  0,   // BUMPER_LEFT
+    PA8,  1,   // BUMPER_RIGHT
+    PB1,  0,   // HOME
+    PB14, 1,   // GRIP_A
+    PB15, 1,   // GRIP_B
+    PA4,  0,   // GRIP_X
+    PA3,  0,   // GRIP_Y
+};
 
-const uint8_t pin_trackpad_data[2]  = {PB7, PB9};
-const uint8_t pin_trackpad_clock[2] = {PB6, PB8};
+const uint8_t pin_trackpad_data[2]  = {PB5, PB9};
+const uint8_t pin_trackpad_clock[2] = {PB4, PB8};
 
 TrackPad trackpad[2]; // 0 - left, 1 - right
 
@@ -20,15 +33,23 @@ void setup()
     pinMode(PC13, OUTPUT);
     digitalWrite(PC13, LOW);
 
-    Serial.begin(256000);
+    Serial.begin(115200);
 
     // Init Hardware
-    pinMode(pin_trigger[1], INPUT_ANALOG);
-    pinMode(pin_trackpad_click[1], INPUT_PULLDOWN);
-    
-    trackpad[0].initialize(pin_trackpad_clock[0], pin_trackpad_data[0]);
+    for (uint8_t i = 0; i < sizeof(pin_trigger); ++i)
+    {
+        pinMode(pin_trigger[i], INPUT_ANALOG);
+    }
 
-    trackpad[1].initialize(pin_trackpad_clock[1], pin_trackpad_data[1]);
+    for (uint8_t i = 0; i < sizeof(pin_button); i += 2)
+    {
+        pinMode(pin_button[i], pin_button[i + 1]? INPUT_PULLDOWN : INPUT_PULLUP);
+    }
+    
+    for (uint8_t i = 0; i < sizeof(pin_trackpad_clock); ++i)
+    {
+        trackpad[i].initialize(pin_trackpad_clock[i], pin_trackpad_data[i]);
+    }
 
     trackpad_maxX = trackpad[0].getMaxX();
     trackpad_maxY = trackpad[0].getMaxY();
@@ -86,14 +107,13 @@ void loop()
         }
     }
     
-    uint32_t triggers[] = {0, analogRead(pin_trigger[1])};
-    //Serial.printf("T %u %u\n", triggers[0], triggers[1]);
-
+    uint32_t triggers[] = {analogRead(pin_trigger[0]), analogRead(pin_trigger[1])};
     InputMapper::mapTriggers(triggers);
 
-    uint16_t right_tp_click = digitalRead(pin_trackpad_click[1]);
-    InputMapper::mapButtons(right_tp_click << (5 + 8)); // B
+    for (uint8_t i = 0; i < sizeof(pin_button); i += 2)
+    {
+        InputMapper::mapButton((InputMapper::HardwareButtons)(i / 2), digitalRead(pin_button[i]) == pin_button[i + 1]);
+    }
 
     InputMapper::sendReport();
-    
 }

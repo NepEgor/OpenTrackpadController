@@ -26,26 +26,10 @@ void USB_Device::end()
     HID_Custom_DeInit();
 }
 
-void USB_Device::buttons(uint16_t buttons)
+void USB_Device::button(uint16_t button, uint16_t value)
 {
-    xinput_report.buttons = buttons;
-}
-
-void USB_Device::button(uint8_t button, bool val)
-{
-    if (val)
-    {
-        xinput_report.buttons |= (1u << button);
-    }
-    else
-    {
-        xinput_report.buttons &= ~(1u << button);
-    }
-}
-
-void USB_Device::dpad(uint8_t dir)
-{
-    xinput_report.dpad = dir & 0b1111;
+    xinput_report.buttons = ((xinput_report.buttons |  button) &  value) |
+                            ((xinput_report.buttons & ~button) & ~value);
 }
 
 void USB_Device::joystick(uint8_t id, int16_t x, int16_t y)

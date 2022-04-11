@@ -9,15 +9,26 @@ namespace InputMapper
 
     void mapTrackpad(uint8_t id, uint8_t fid, int32_t x, int32_t y);
 
-    void mapTriggers(uint32_t values[2]);
+    void mapTriggers(uint32_t value[2]);
 
-    // 0, 1       - triggers        dunno if triggers will be dual stage
-    // 4, 5       - start, select = xinput
-    // 6, 7       - trackpads     = xinput L3 & R3
-    // 0, 1  << 8 - bumpers       = xinput
-    // 2     << 8 - home          = xinput
-    // 4 - 7 << 8 - grips         = xinput ABXY
-    void mapButtons(uint16_t buttons);
+    enum HardwareButtons: uint8_t
+    {
+        START,
+        SELECT,
+        TRACKPAD_LEFT,
+        TRACKPAD_RIGHT,
+        BUMPER_LEFT,
+        BUMPER_RIGHT,
+        HOME,
+        GRIP_A,
+        GRIP_B,
+        GRIP_X,
+        GRIP_Y,
+    };
+    
+    extern uint16_t button_map[];
+
+    void mapButton(HardwareButtons button, bool value);
 
     // void mapGyro();
 
