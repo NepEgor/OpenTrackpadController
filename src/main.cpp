@@ -7,18 +7,20 @@ const uint8_t pin_trigger[2] = {PA1, PA0};
 
 const uint8_t pin_button[]  =
 {
-    PB12, 0,   // START
-    PB13, 0,   // SELECT
-    PC15, 0,   // TRACKPAD_LEFT
-    PB3,  1,   // TRACKPAD_RIGHT
-    PA2,  0,   // BUMPER_LEFT
-    PA8,  1,   // BUMPER_RIGHT
-    PB1,  0,   // HOME
-    PB14, 1,   // GRIP_A
-    PB15, 1,   // GRIP_B
-    PA4,  0,   // GRIP_X
-    PA3,  0,   // GRIP_Y
+    PB12, 0, // START
+    PB13, 0, // SELECT
+    PC15, 0, // TRACKPAD_LEFT
+    PB3,  1, // TRACKPAD_RIGHT
+    PA2,  0, // BUMPER_LEFT
+    PA8,  1, // BUMPER_RIGHT
+    PB1,  0, // HOME
+    PB14, 1, // GRIP_A
+    PB15, 1, // GRIP_B
+    PA4,  0, // GRIP_X
+    PA3,  0, // GRIP_Y
 };
+
+uint8_t button_state[sizeof(pin_button) / 2] = {0};
 
 const uint8_t pin_trackpad_data[2]  = {PB5, PB9};
 const uint8_t pin_trackpad_clock[2] = {PB4, PB8};
@@ -112,7 +114,12 @@ void loop()
 
     for (uint8_t i = 0; i < sizeof(pin_button); i += 2)
     {
-        InputMapper::mapButton((InputMapper::HardwareButtons)(i / 2), digitalRead(pin_button[i]) == pin_button[i + 1]);
+        uint8_t value = digitalRead(pin_button[i]);
+        if (value != button_state[i / 2])
+        {
+            button_state[i / 2] = value;
+            InputMapper::mapButton((InputMapper::HardwareButtons)(i / 2), value == pin_button[i + 1]);
+        }
     }
 
     InputMapper::sendReport();

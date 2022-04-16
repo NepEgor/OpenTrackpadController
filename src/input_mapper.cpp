@@ -3,6 +3,10 @@
 #include "usb_device.h"
 #include "touch_controls_all.h"
 
+#include <map>
+
+#include <Arduino.h>
+
 namespace InputMapper
 {
     USB_Device device;
@@ -25,7 +29,45 @@ namespace InputMapper
     };
 
     const uint8_t num_controls = sizeof(tcontrols) / sizeof(TouchControl*[2]);
+    
+    uint16_t button_map[] =
+    {
+        USB_Device::START,
+        USB_Device::SELECT,
+        USB_Device::JOYSTICK_LEFT,
+        USB_Device::JOYSTICK_RIGHT,
+        USB_Device::BUMPER_LEFT,
+        USB_Device::BUMPER_RIGHT,
+        USB_Device::HOME,
+        USB_Device::FACE_A,
+        USB_Device::FACE_B,
+        USB_Device::FACE_X,
+        USB_Device::FACE_Y,
+    };
 
+    uint16_t dpad_left_map[] = 
+    {
+        USB_Device::DPAD_UP,
+        USB_Device::DPAD_DOWN,
+        USB_Device::DPAD_LEFT,
+        USB_Device::DPAD_RIGHT,
+    };
+
+    uint16_t dpad_right_map[] = 
+    {
+        USB_Device::FACE_Y,
+        USB_Device::FACE_A,
+        USB_Device::FACE_X,
+        USB_Device::FACE_B,
+    };
+
+    uint16_t* dpad_map[] =
+    {
+        dpad_left_map,
+        dpad_right_map,
+    };
+    
+    std::map<uint16_t, uint8_t> xinput_counter;
 
     void begin()
     {
@@ -60,44 +102,59 @@ namespace InputMapper
         tdpad_left.init(pos_x, pos_y, pos_r, TouchDpad::DPAD_TYPE_SECTOR_4);
         tdpad_left.setDeadZoneInner(dead_zone_inner);
 
-        device.begin();
-    }
-
-    uint16_t dpad_left_map[] = 
-    {
-        USB_Device::DPAD_UP,
-        USB_Device::DPAD_DOWN,
-        USB_Device::DPAD_LEFT,
-        USB_Device::DPAD_RIGHT,
-    };
-
-    uint16_t dpad_right_map[] = 
-    {
-        USB_Device::FACE_Y,
-        USB_Device::FACE_A,
-        USB_Device::FACE_X,
-        USB_Device::FACE_B,
-    };
-
-    uint16_t* dpad_map[] =
-    {
-        dpad_left_map,
-        dpad_right_map,
-    };
-    
-    uint16_t mapDpad(uint8_t dpad, TouchDpad::DpadType dpad_type, uint8_t direction)
-    {
-        uint16_t button = 0;
-
-        for (uint8_t i = 0; i < dpad_type; ++i)
+        for (uint8_t i = 0; i < sizeof(button_map) / sizeof(uint16_t); ++i)
         {
-            if (direction & (1 << i))
+            auto search = xinput_counter.find(button_map[i]);
+            if (search == xinput_counter.end())
             {
-                button |= dpad_map[dpad][i];
+                xinput_counter.insert(std::make_pair(button_map[i], 0));
             }
         }
 
-        return button;
+        for (uint8_t d = 0; d < 2; ++d)
+        {
+            for (uint8_t i = 0; i < 4; ++i)
+            {
+                auto search = xinput_counter.find(dpad_map[d][i]);
+                if (search == xinput_counter.end())
+                {
+                    xinput_counter.insert(std::make_pair(dpad_map[d][i], 0));
+                }
+            }
+        }
+
+        device.begin();
+    }
+
+    void modifyCounter(uint16_t xinput_button, bool value)
+    {
+        auto search = xinput_counter.find(xinput_button);
+
+        if (search != xinput_counter.end())
+        {
+            if (value)
+            {
+                search->second++;
+            }
+            else
+            {
+                if (search->second > 0)
+                {
+                    search->second--;
+                }
+            }
+        }
+    }
+
+    void mapDpad(uint8_t dpad, uint8_t direction, bool value)
+    {
+        for (uint8_t i = 0; i < 4; ++i)
+        {
+            if (direction & (1 << i))
+            {
+                modifyCounter(dpad_map[dpad][i], value);
+            }
+        }
     }
 
     void mapTrackpad(uint8_t id, uint8_t fid, int32_t x, int32_t y)
@@ -124,13 +181,11 @@ namespace InputMapper
                     {
                         TouchDpad* dpad = (TouchDpad*)tcontrols[id][c];
 
-                        uint16_t prev_button = mapDpad(id, dpad->getType(), dpad->getButton());
-                        device.button(prev_button, 0);
+                        mapDpad(id, dpad->getButton(), 0);
 
                         res = tcontrols[id][c]->touch(fid, x, y);
 
-                        uint16_t button = mapDpad(id, dpad->getType(), dpad->getButton());
-                        device.button(button, button);
+                        mapDpad(id, dpad->getButton(), 1);
                     }
                     break;
             }
@@ -169,28 +224,18 @@ namespace InputMapper
         device.triggers(mapped_value);
     }
 
-    uint16_t button_map[] =
-    {
-        USB_Device::START,
-        USB_Device::SELECT,
-        USB_Device::JOYSTICK_LEFT,
-        USB_Device::JOYSTICK_RIGHT,
-        USB_Device::BUMPER_LEFT,
-        USB_Device::BUMPER_RIGHT,
-        USB_Device::HOME,
-        USB_Device::FACE_A,
-        USB_Device::FACE_B,
-        USB_Device::FACE_X,
-        USB_Device::FACE_Y,
-    };
-
     void mapButton(HardwareButtons button, bool value)
     {
-        device.button(button_map[button], value? button_map[button] : 0);
+        modifyCounter(button_map[button], value);
     }
 
     void sendReport()
-    {
+    {   
+        for (auto it = xinput_counter.begin(); it != xinput_counter.end(); ++it)
+        {
+            device.button(it->first, it->second > 0? it->first : 0);
+        }
+
         device.sendReport();
     }
 }
