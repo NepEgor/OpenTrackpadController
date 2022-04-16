@@ -51,39 +51,45 @@ namespace InputMapper
         pos_x = 20.636 * ppmX;
         pos_y = 20.636 * ppmY;
         pos_r = 45 * ppmX / 2;
-        tdpad_right.init(pos_x, pos_y, pos_r, TouchDpad::DPAD_TYPE_SECTOR4);
+        tdpad_right.init(pos_x, pos_y, pos_r, TouchDpad::DPAD_TYPE_SECTOR_4);
         tdpad_right.setDeadZoneInner(dead_zone_inner);
 
         pos_x = (62.5 - 20.636) * ppmX;
         pos_y = 20.636 * ppmY;
 
-        tdpad_left.init(pos_x, pos_y, pos_r, TouchDpad::DPAD_TYPE_SECTOR4);
+        tdpad_left.init(pos_x, pos_y, pos_r, TouchDpad::DPAD_TYPE_SECTOR_4);
         tdpad_left.setDeadZoneInner(dead_zone_inner);
 
         device.begin();
     }
 
-    uint16_t dpad_map[][4] =
+    uint16_t dpad_left_map[] = 
     {
-        {
-            USB_Device::DPAD_UP,
-            USB_Device::DPAD_DOWN,
-            USB_Device::DPAD_LEFT,
-            USB_Device::DPAD_RIGHT,
-        },
-        {
-            USB_Device::FACE_Y,
-            USB_Device::FACE_A,
-            USB_Device::FACE_X,
-            USB_Device::FACE_B,
-        },
+        USB_Device::DPAD_UP,
+        USB_Device::DPAD_DOWN,
+        USB_Device::DPAD_LEFT,
+        USB_Device::DPAD_RIGHT,
+    };
+
+    uint16_t dpad_right_map[] = 
+    {
+        USB_Device::FACE_Y,
+        USB_Device::FACE_A,
+        USB_Device::FACE_X,
+        USB_Device::FACE_B,
+    };
+
+    uint16_t* dpad_map[] =
+    {
+        dpad_left_map,
+        dpad_right_map,
     };
     
-    uint16_t mapDpad(uint8_t dpad, uint8_t direction)
+    uint16_t mapDpad(uint8_t dpad, TouchDpad::DpadType dpad_type, uint8_t direction)
     {
         uint16_t button = 0;
 
-        for (uint8_t i = 0; i < 4; ++i)
+        for (uint8_t i = 0; i < dpad_type; ++i)
         {
             if (direction & (1 << i))
             {
@@ -98,7 +104,7 @@ namespace InputMapper
     {
         for (uint8_t c = 0; c < num_controls; ++c)
         {
-            int res;
+            int res = 0;
 
             switch(tcontrols[id][c]->getControlType())
             {
@@ -106,18 +112,24 @@ namespace InputMapper
                     break;
 
                 case TouchControl::CT_JOYSTICK:
-                    res = tcontrols[id][c]->touch(fid, x, y);
-                    device.joystick(id, ((TouchJoystick*)tcontrols[id][c])->getX(), ((TouchJoystick*)tcontrols[id][c])->getY());
+                    {
+                        res = tcontrols[id][c]->touch(fid, x, y);
+
+                        TouchJoystick* tjoy = (TouchJoystick*)tcontrols[id][c];
+                        device.joystick(id, tjoy->getX(), tjoy->getY());
+                    }
                     break;
                 
                 case TouchControl::CT_DPAD:
                     {
-                        uint16_t prev_button = mapDpad(id, ((TouchDpad*)tcontrols[id][c])->getButton());
+                        TouchDpad* dpad = (TouchDpad*)tcontrols[id][c];
+
+                        uint16_t prev_button = mapDpad(id, dpad->getType(), dpad->getButton());
                         device.button(prev_button, 0);
 
                         res = tcontrols[id][c]->touch(fid, x, y);
 
-                        uint16_t button = mapDpad(id, ((TouchDpad*)tcontrols[id][c])->getButton());
+                        uint16_t button = mapDpad(id, dpad->getType(), dpad->getButton());
                         device.button(button, button);
                     }
                     break;

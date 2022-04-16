@@ -86,7 +86,7 @@ int8_t TouchDpad::touch(int8_t fid, int32_t tx, int32_t ty)
         {
             switch (dpad_type)
             {
-                case DPAD_TYPE_SECTOR4:
+                case DPAD_TYPE_SECTOR_4:
                     button |= (invert_y * ty > invert_x * -tx);
                     button |= (invert_y * ty > invert_x *  tx) << 1;
 
@@ -102,7 +102,7 @@ int8_t TouchDpad::touch(int8_t fid, int32_t tx, int32_t ty)
 
                     break;
 
-                case DPAD_TYPE_SECTOR8:
+                case DPAD_TYPE_SECTOR_8:
                     button |= (invert_y * ty > invert_x * -tx * k2);
                     button |= (invert_y * ty > invert_x * -tx * k1) << 1;
                     button |= (invert_y * ty > invert_x *  tx * k1) << 2;

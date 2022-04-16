@@ -7,10 +7,10 @@ class TouchDpad : public TouchControl
 {
     public:
 
-    enum DpadType
+    enum DpadType : uint8_t
     {
-        DPAD_TYPE_SECTOR4,
-        DPAD_TYPE_SECTOR8
+        DPAD_TYPE_SECTOR_4 = 4,
+        DPAD_TYPE_SECTOR_8 = 8,
     };
 
     private:
@@ -28,13 +28,14 @@ class TouchDpad : public TouchControl
     public:
 
     TouchDpad() {}
-    TouchDpad(int32_t pos_x, int32_t pos_y, int32_t pos_r, DpadType dpad_type = DPAD_TYPE_SECTOR4);
+    TouchDpad(int32_t pos_x, int32_t pos_y, int32_t pos_r, DpadType dpad_type = DPAD_TYPE_SECTOR_4);
 
-    void init(int32_t pos_x, int32_t pos_y, int32_t pos_r, DpadType dpad_type = DPAD_TYPE_SECTOR4);
+    void init(int32_t pos_x, int32_t pos_y, int32_t pos_r, DpadType dpad_type = DPAD_TYPE_SECTOR_4);
     
     void setDeadZoneInner(int32_t dead_zone_inner);
 
     void setType(DpadType dpad_type) {this->dpad_type = dpad_type;}
+    DpadType getType() {return dpad_type;}
 
     void setInvertX(bool invert_x = true);
     void setInvertY(bool invert_y = true);

@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 
-#include "usbd_hid_composite_if.h"
 #include "usbd_report.h"
 
 class USB_Device
@@ -62,6 +61,8 @@ class USB_Device
     void end();
 
     void button(uint16_t button, uint16_t value);
+
+    uint16_t isButtonPressed(uint16_t button);
 
 	void joystick(uint8_t id, int16_t x, int16_t y);
 

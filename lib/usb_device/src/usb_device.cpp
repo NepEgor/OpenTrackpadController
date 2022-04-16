@@ -1,5 +1,6 @@
 #include "usb_device.h"
 
+#include "usbd_hid_composite_if.h"
 #include "usbd_hid_custom_if.h"
 
 void USB_Device::begin()
@@ -30,6 +31,11 @@ void USB_Device::button(uint16_t button, uint16_t value)
 {
     xinput_report.buttons = ((xinput_report.buttons |  button) &  value) |
                             ((xinput_report.buttons & ~button) & ~value);
+}
+
+uint16_t USB_Device::isButtonPressed(uint16_t button)
+{
+    return xinput_report.buttons & button;
 }
 
 void USB_Device::joystick(uint8_t id, int16_t x, int16_t y)
