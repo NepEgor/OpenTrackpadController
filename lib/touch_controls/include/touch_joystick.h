@@ -7,7 +7,7 @@ class TouchJoystick : public TouchControl
 {
     public:
 
-    private:
+    protected:
 
     int32_t dead_zone_inner;
     int32_t dead_zone_inner2; // ^ 2

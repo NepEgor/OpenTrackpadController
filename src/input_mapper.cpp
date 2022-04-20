@@ -11,7 +11,7 @@ namespace InputMapper
 {
     USB_Device device;
 
-    TouchJoystick tjoystick_right;
+    TouchMouseJoustick tjoystick_right;
     TouchJoystick tjoystick_left;
     TouchDpad tdpad_right;
     TouchDpad tdpad_left;
@@ -85,9 +85,10 @@ namespace InputMapper
 
         pos_x = 31.25 * ppmX;
         pos_y = (103.9 - 31.25) * ppmY;
+        dead_zone_outer = 10 * ppmX;
 
         tjoystick_right.init(pos_x, pos_y, pos_r, USB_Device::usb_joystick_x, USB_Device::usb_joystick_y, USB_Device::usb_joystick_r);
-        tjoystick_right.setDeadZoneInner(dead_zone_inner);
+        //tjoystick_right.setDeadZoneInner(dead_zone_inner);
         tjoystick_right.setDeadZoneOuter(dead_zone_outer);
 
         pos_x = 20.636 * ppmX;
@@ -157,7 +158,7 @@ namespace InputMapper
         }
     }
 
-    void mapTrackpad(uint8_t id, uint8_t fid, int32_t x, int32_t y)
+    void mapTrackpad(uint8_t id, uint8_t fid, int32_t x, int32_t y, int32_t dx, int32_t dy)
     {
         for (uint8_t c = 0; c < num_controls; ++c)
         {
@@ -170,20 +171,31 @@ namespace InputMapper
 
                 case TouchControl::CT_JOYSTICK:
                     {
-                        res = tcontrols[id][c]->touch(fid, x, y);
-
                         TouchJoystick* tjoy = (TouchJoystick*)tcontrols[id][c];
+
+                        res = tjoy->touch(fid, x, y);
+
                         device.joystick(id, tjoy->getX(), tjoy->getY());
                     }
                     break;
                 
+                case TouchControl::CT_MOUSE_JOYSTICK:
+                    {
+                        TouchMouseJoustick* tmjoy = (TouchMouseJoustick*)tcontrols[id][c];
+
+                        res = tmjoy->touch(fid, x, y, dx, dy);
+
+                        device.joystick(id, tmjoy->getX(), tmjoy->getY());
+                    }
+                    break;
+
                 case TouchControl::CT_DPAD:
                     {
                         TouchDpad* dpad = (TouchDpad*)tcontrols[id][c];
 
                         mapDpad(id, dpad->getButton(), 0);
 
-                        res = tcontrols[id][c]->touch(fid, x, y);
+                        res = dpad->touch(fid, x, y);
 
                         mapDpad(id, dpad->getButton(), 1);
                     }

@@ -10,6 +10,7 @@ class TouchControl
     enum ControlType: uint8_t{
         CT_NONE,
         CT_JOYSTICK,
+        CT_MOUSE_JOYSTICK,
         CT_DPAD,
     };
 

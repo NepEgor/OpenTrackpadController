@@ -75,6 +75,8 @@ void loop()
             {
                 int32_t x = -1;
                 int32_t y = -1;
+                int32_t dx = 0;
+                int32_t dy = 0;
                 switch (tevent[i].type)
                 {
                     case TET_DOWN:
@@ -83,15 +85,19 @@ void loop()
                          // trackpad is rotated 90 deg so x and y are switched
                         x = tevent[i].fp.y;
                         y = tevent[i].fp.x;
+                        dx = tevent[i].fp.dy;
+                        dy = tevent[i].fp.dx;
                         
                         // invert axis for the trackpads
                         if(t == 0)
                         {
                             y = trackpad_maxX - y;
+                            dy = -dy;
                         }
                         else
                         {
                             x = trackpad_maxY - x;
+                            dx = -dx;
                         }
 
                         break;
@@ -104,7 +110,7 @@ void loop()
                         break;
                 }
                 
-                InputMapper::mapTrackpad(t, tevent[i].finger_id, x, y);
+                InputMapper::mapTrackpad(t, tevent[i].finger_id, x, y, dx, dy);
             }
         }
     }

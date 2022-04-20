@@ -7,7 +7,7 @@ namespace InputMapper
 {
     void begin();
 
-    void mapTrackpad(uint8_t id, uint8_t fid, int32_t x, int32_t y);
+    void mapTrackpad(uint8_t id, uint8_t fid, int32_t x, int32_t y, int32_t dx, int32_t dy);
 
     void mapTriggers(uint32_t value[2]);
 

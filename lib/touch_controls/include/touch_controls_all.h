@@ -3,6 +3,7 @@
 
 #include "touch_control.h"
 #include "touch_joystick.h"
+#include "touch_mouse_joystick.h"
 #include "touch_dpad.h"
 
 #endif
