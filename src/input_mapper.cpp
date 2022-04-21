@@ -29,7 +29,7 @@ namespace InputMapper
     };
 
     const uint8_t num_controls = sizeof(tcontrols) / sizeof(TouchControl*[2]);
-    
+    /*
     uint16_t button_map[] =
     {
         USB_Device::START,
@@ -43,6 +43,22 @@ namespace InputMapper
         USB_Device::FACE_B,
         USB_Device::FACE_X,
         USB_Device::FACE_Y,
+    };
+    */
+    // Genshin map
+    uint16_t button_map[] =
+    {
+        USB_Device::START,
+        USB_Device::SELECT,
+        USB_Device::FACE_B,
+        USB_Device::FACE_X,
+        USB_Device::BUMPER_LEFT,
+        USB_Device::BUMPER_RIGHT,
+        USB_Device::HOME,
+        USB_Device::FACE_A,
+        USB_Device::JOYSTICK_RIGHT,
+        USB_Device::FACE_A,
+        USB_Device::JOYSTICK_LEFT,
     };
 
     uint16_t dpad_left_map[] = 
@@ -90,6 +106,7 @@ namespace InputMapper
         tjoystick_right.init(pos_x, pos_y, pos_r, USB_Device::usb_joystick_x, USB_Device::usb_joystick_y, USB_Device::usb_joystick_r);
         //tjoystick_right.setDeadZoneInner(dead_zone_inner);
         tjoystick_right.setDeadZoneOuter(dead_zone_outer);
+        tjoystick_right.setSensitivity(10);
 
         pos_x = 20.636 * ppmX;
         pos_y = 20.636 * ppmY;

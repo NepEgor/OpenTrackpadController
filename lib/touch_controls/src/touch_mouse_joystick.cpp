@@ -8,7 +8,12 @@ void TouchMouseJoustick::init(int32_t pos_x, int32_t pos_y, int32_t pos_r, int16
 
     this->control_type = CT_MOUSE_JOYSTICK;
 
-    this->delta2usb = this->pos2usb * 30;
+    this->sensitivity = this->pos2usb;
+}
+
+void TouchMouseJoustick::setSensitivity(float sensitivity)
+{
+    this->sensitivity = this->pos2usb * sensitivity;
 }
 
 void TouchMouseJoustick::setTrackballFriction(float trackball_friction)
@@ -45,11 +50,14 @@ int8_t TouchMouseJoustick::touch(int8_t fid, int32_t tx, int32_t ty, int32_t tdx
 
         if (t2 <= dead_zone_outer2)
         {
-            int32_t x32 = -tdx * delta2usb + usb_x;
-            int32_t y32 = -tdy * delta2usb + usb_y;
+            int32_t x32 = -tdx * sensitivity;
+            int32_t y32 = -tdy * sensitivity;
 
             x = x32 > usb_r? usb_r : (x32 < -usb_r? -usb_r : x32);
             y = y32 > usb_r? usb_r : (y32 < -usb_r? -usb_r : y32);
+
+            x + usb_x;
+            y + usb_y;
         }
         else // in bounds outside of outer dead zone - edge spin
         {
