@@ -59,11 +59,10 @@ int8_t TouchJoystick::touch(int8_t fid, int32_t tx, int32_t ty)
 {
     if (finger_id != -1 && finger_id != fid)
     {
+        touching = 0;
         return 0;
     }
 
-    int8_t ret = 2;
-    
     tx -= pos_x;
     ty -= pos_y;
 
@@ -76,6 +75,7 @@ int8_t TouchJoystick::touch(int8_t fid, int32_t tx, int32_t ty)
     if (t2 > pos_r2)
     {
         finger_id = -1;
+        touching = 0;
         return 0;
     }
     else // inside inner dead_zone
@@ -84,25 +84,29 @@ int8_t TouchJoystick::touch(int8_t fid, int32_t tx, int32_t ty)
 
         if (t2 < dead_zone_inner2)
         {
-            ret = 1;
+            touching = 1;
         }
         else // between dead zones
-        if (t2 <= dead_zone_outer2)
         {
-            x = tx * pos2usb + usb_x;
-            y = ty * pos2usb + usb_y;
-        }
-        else // in bounds outside of outer dead zone
-        {
-            float len = sqrt(t2);
+            touching = 2;
 
-            x = (tx * dead_zone_outer / len) * pos2usb + usb_x;
-            y = (ty * dead_zone_outer / len) * pos2usb + usb_y;
-        }
+            if (t2 <= dead_zone_outer2)
+            {
+                x = tx * pos2usb + usb_x;
+                y = ty * pos2usb + usb_y;
+            }
+            else // in bounds outside of outer dead zone
+            {
+                float len = sqrt(t2);
 
-        if (invert_x) x = 2 * usb_x - x;
-        if (invert_y) y = 2 * usb_y - y;
+                x = (tx * dead_zone_outer / len) * pos2usb + usb_x;
+                y = (ty * dead_zone_outer / len) * pos2usb + usb_y;
+            }
+
+            if (invert_x) x = 2 * usb_x - x;
+            if (invert_y) y = 2 * usb_y - y;
+        }
     }
     
-    return ret;
+    return touching;
 }

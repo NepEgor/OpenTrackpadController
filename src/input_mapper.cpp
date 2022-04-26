@@ -5,8 +5,6 @@
 
 #include <map>
 
-#include <Arduino.h>
-
 namespace InputMapper
 {
     USB_Device device;
@@ -105,6 +103,8 @@ namespace InputMapper
 
         tjoystick_right.init(pos_x, pos_y, pos_r, USB_Device::usb_joystick_x, USB_Device::usb_joystick_y, USB_Device::usb_joystick_r);
         //tjoystick_right.setDeadZoneInner(dead_zone_inner);
+        tjoystick_right.setTrackballFriction(1.f / 4000000.f);
+        //tjoystick_right.setTrackballFriction(0);
         tjoystick_right.setDeadZoneOuter(dead_zone_outer);
         tjoystick_right.setSensitivity(10);
 
@@ -175,7 +175,7 @@ namespace InputMapper
         }
     }
 
-    void mapTrackpad(uint8_t id, uint8_t fid, int32_t x, int32_t y, int32_t dx, int32_t dy)
+    void mapTrackpad(uint8_t id, uint8_t fid, int32_t x, int32_t y, int32_t dx, int32_t dy, uint32_t time)
     {
         for (uint8_t c = 0; c < num_controls; ++c)
         {
@@ -200,7 +200,7 @@ namespace InputMapper
                     {
                         TouchMouseJoustick* tmjoy = (TouchMouseJoustick*)tcontrols[id][c];
 
-                        res = tmjoy->touch(fid, x, y, dx, dy);
+                        res = tmjoy->touch(fid, x, y, dx, dy, time);
 
                         device.joystick(id, tmjoy->getX(), tmjoy->getY());
                     }
@@ -223,6 +223,34 @@ namespace InputMapper
             if (res > 0)
             {
                 return;
+            }
+        }
+    }
+
+    void update(uint32_t time)
+    {
+        for (uint8_t id = 0; id < 2; ++id)
+        {
+            for (uint8_t c = 0; c < num_controls; ++c)
+            {
+                int res = 0;
+
+                switch(tcontrols[id][c]->getControlType())
+                {
+                    case TouchControl::CT_MOUSE_JOYSTICK:
+                        {
+                            TouchMouseJoustick* tmjoy = (TouchMouseJoustick*)tcontrols[id][c];
+
+                            tmjoy->updateTrackball(time);
+
+                            device.joystick(id, tmjoy->getX(), tmjoy->getY());
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+
             }
         }
     }

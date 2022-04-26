@@ -56,10 +56,9 @@ int8_t TouchDpad::touch(int8_t fid, int32_t tx, int32_t ty)
 {
     if (finger_id != -1 && finger_id != fid)
     {
+        touching = 0;
         return 0;
     }
-
-    int8_t ret = 2;
 
     tx -= pos_x;
     ty -= pos_y;
@@ -72,6 +71,7 @@ int8_t TouchDpad::touch(int8_t fid, int32_t tx, int32_t ty)
     if (t2 > pos_r2)
     {
         finger_id = -1;
+        touching = 0;
         return 0;
     }
     else // inside inner dead_zone
@@ -80,10 +80,12 @@ int8_t TouchDpad::touch(int8_t fid, int32_t tx, int32_t ty)
 
         if (t2 < dead_zone_inner2)
         {
-            ret = 1;
+            touching = 1;
         }
         else // in bounds
         {
+            touching = 2;
+
             switch (dpad_type)
             {
                 case DPAD_TYPE_SECTOR_4:
@@ -130,5 +132,5 @@ int8_t TouchDpad::touch(int8_t fid, int32_t tx, int32_t ty)
         }
     }
     
-    return ret;
+    return touching;
 }

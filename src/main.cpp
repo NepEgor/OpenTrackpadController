@@ -110,11 +110,13 @@ void loop()
                         break;
                 }
                 
-                InputMapper::mapTrackpad(t, tevent[i].finger_id, x, y, dx, dy);
+                InputMapper::mapTrackpad(t, tevent[i].finger_id, x, y, dx, dy, micros());
             }
         }
     }
     
+    InputMapper::update(micros());
+
     uint32_t triggers[] = {analogRead(pin_trigger[0]), analogRead(pin_trigger[1])};
     InputMapper::mapTriggers(triggers);
 
