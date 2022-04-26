@@ -95,30 +95,58 @@ int8_t TouchMouseJoustick::touch(int8_t fid, int32_t tx, int32_t ty, int32_t tdx
 
 void TouchMouseJoustick::updateTrackball(uint32_t time)
 {
-    if ((trackball_friction > 0) && !touching && (trackball_vel_x > 0))
+    if (trackball_friction > 0 && !touching)
     {
-        if (xf > usb_x)
+        if (trackball_vel_x != 0)
         {
+            int8_t dir = (xf > 0) ? 1 : -1;
+
             float dt = time - time0;
             float dt2 = dt * dt;
 
-            float x1 = xf + trackball_vel_x * dt - trackball_friction * dt2;
-            if (x1 > usb_r)
-            {
-                x1 = usb_r;
-            }
-            x = usb_x + x1;
+            float x1 = xf + trackball_vel_x * dt - trackball_friction * dt2 * dir;
 
-            if (x < usb_x)
+            if ((dir * x1) > usb_r)
+            {
+                x1 = dir * usb_r;
+            }
+
+            if ((dir * x1) > 0)
+            {
+                x = x1 + usb_x;
+            }
+            else
             {
                 x = usb_x;
-                xf = usb_x;
+                xf = 0;
+                trackball_vel_x = 0;
             }
         }
-        else
+
+        if (trackball_vel_y != 0)
         {
-            x = usb_x;
-            xf = usb_x;
+            int8_t dir = (yf > 0) ? 1 : -1;
+
+            float dt = time - time0;
+            float dt2 = dt * dt;
+
+            float y1 = yf + trackball_vel_y * dt - trackball_friction * dt2 * dir;
+
+            if ((dir * y1) > usb_r)
+            {
+                y1 = dir * usb_r;
+            }
+
+            if ((dir * y1) > 0)
+            {
+                y = y1 + usb_y;
+            }
+            else
+            {
+                y = usb_y;
+                yf = 0;
+                trackball_vel_y = 0;
+            }
         }
     }
 }
