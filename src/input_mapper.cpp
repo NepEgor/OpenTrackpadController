@@ -96,6 +96,7 @@ namespace InputMapper
         tjoystick_left.init(pos_x, pos_y, pos_r, USB_Device::usb_joystick_x, USB_Device::usb_joystick_y, USB_Device::usb_joystick_r);
         tjoystick_left.setDeadZoneInner(dead_zone_inner);
         tjoystick_left.setDeadZoneOuter(dead_zone_outer);
+        tjoystick_left.setMappedId(0);
 
         pos_x = 31.25 * ppmX;
         pos_y = (103.9 - 31.25) * ppmY;
@@ -107,6 +108,7 @@ namespace InputMapper
         //tjoystick_right.setTrackballFriction(0);
         tjoystick_right.setDeadZoneOuter(dead_zone_outer);
         tjoystick_right.setSensitivity(10);
+        tjoystick_right.setMappedId(1);
 
         pos_x = 20.636 * ppmX;
         pos_y = 20.636 * ppmY;
@@ -192,7 +194,7 @@ namespace InputMapper
 
                         res = tjoy->touch(fid, x, y);
 
-                        device.joystick(id, tjoy->getX(), tjoy->getY());
+                        device.joystick(tjoy->getMappedId(), tjoy->getX(), tjoy->getY());
                     }
                     break;
                 
@@ -202,7 +204,7 @@ namespace InputMapper
 
                         res = tmjoy->touch(fid, x, y, dx, dy, time);
 
-                        device.joystick(id, tmjoy->getX(), tmjoy->getY());
+                        device.joystick(tmjoy->getMappedId(), tmjoy->getX(), tmjoy->getY());
                     }
                     break;
 
@@ -243,7 +245,7 @@ namespace InputMapper
 
                             tmjoy->updateTrackball(time);
 
-                            device.joystick(id, tmjoy->getX(), tmjoy->getY());
+                            device.joystick(tmjoy->getMappedId(), tmjoy->getX(), tmjoy->getY());
                         }
                         break;
 
@@ -258,24 +260,24 @@ namespace InputMapper
     void mapTriggers(uint32_t value[2])
     {
         static const uint32_t max = 70;
-        static const uint32_t min = 2;
+        static const uint32_t min = 13;
 
         uint8_t mapped_value[2];
  
         for (uint8_t i = 0; i < 2; ++i)
         {
-             if (value[i] < min)
-             {
-                 mapped_value[i] = 0;
-             }
-             else if (value[i] > max)
-             {
-                 mapped_value[i] = 255;
-             }
-             else
-             {
-                 mapped_value[i] = (value[i] - min) * 255 / (max - min);
-             }
+            if (value[i] < min)
+            {
+                mapped_value[i] = 0;
+            }
+            else if (value[i] > max)
+            {
+                mapped_value[i] = 255;
+            }
+            else
+            {
+                mapped_value[i] = (value[i] - min) * 255 / (max - min);
+            }
         }
 
         device.triggers(mapped_value);

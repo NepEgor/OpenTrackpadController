@@ -26,6 +26,8 @@ class TouchJoystick : public TouchControl
     bool invert_x;
     bool invert_y;
 
+    uint8_t mapped_id;
+
     public:
 
     TouchJoystick() {}
@@ -38,6 +40,9 @@ class TouchJoystick : public TouchControl
 
     void setInvertX(bool invert_x = true);
     void setInvertY(bool invert_y = true);
+
+    void setMappedId(uint8_t mapped_id);
+    uint8_t getMappedId() {return mapped_id;}
 
     int8_t touch(int8_t fid, int32_t tx, int32_t ty);
 

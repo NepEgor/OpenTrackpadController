@@ -55,6 +55,11 @@ void TouchJoystick::setInvertY(bool invert_y)
     this->invert_y = invert_y;
 }
 
+void TouchJoystick::setMappedId(uint8_t mapped_id)
+{
+    this->mapped_id = mapped_id;
+}
+
 int8_t TouchJoystick::touch(int8_t fid, int32_t tx, int32_t ty)
 {
     if (finger_id != -1 && finger_id != fid)
