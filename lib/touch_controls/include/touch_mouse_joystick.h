@@ -13,8 +13,8 @@ class TouchMouseJoystick : public TouchJoystick
     float trackball_vel_x;
     float trackball_vel_y;
 
-    float xf;
-    float yf;
+    float dx;
+    float dy;
 
     float time0;
 

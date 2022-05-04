@@ -58,20 +58,20 @@ int8_t TouchMouseJoystick::touch(int8_t fid, int32_t tx, int32_t ty, int32_t tdx
         {
             touching = 2;
 
-            xf = sensitivity * -tdx;
-            yf = sensitivity * -tdy;
+            dx = sensitivity * -tdx;
+            dy = sensitivity * -tdy;
 
-            xf = xf > usb_r? usb_r : (xf < -usb_r? -usb_r : xf);
-            yf = yf > usb_r? usb_r : (yf < -usb_r? -usb_r : yf);
+            dx = dx > usb_r? usb_r : (dx < -usb_r? -usb_r : dx);
+            dy = dy > usb_r? usb_r : (dy < -usb_r? -usb_r : dy);
 
             float dt = time - time0;
             time0 = time;
 
-            trackball_vel_x = xf / (dt * 1000.f);
-            trackball_vel_y = yf / (dt * 1000.f);
+            trackball_vel_x = dx / (dt * 1000.f);
+            trackball_vel_y = dy / (dt * 1000.f);
             
-            x = xf + usb_x;
-            y = yf + usb_y;
+            x = dx + usb_x;
+            y = dy + usb_y;
         }
         else // in bounds outside of outer dead zone - edge spin
         {
@@ -99,12 +99,12 @@ void TouchMouseJoystick::updateTrackball(uint32_t time)
     {
         if (trackball_vel_x != 0)
         {
-            int8_t dir = (xf > 0) ? 1 : -1;
+            int8_t dir = (dx > 0) ? 1 : -1;
 
             float dt = time - time0;
             float dt2 = dt * dt;
 
-            float x1 = xf + trackball_vel_x * dt - trackball_friction * dt2 * dir;
+            float x1 = dx + trackball_vel_x * dt - trackball_friction * dt2 * dir;
 
             if ((dir * x1) > usb_r)
             {
@@ -118,19 +118,19 @@ void TouchMouseJoystick::updateTrackball(uint32_t time)
             else
             {
                 x = usb_x;
-                xf = 0;
+                dx = 0;
                 trackball_vel_x = 0;
             }
         }
 
         if (trackball_vel_y != 0)
         {
-            int8_t dir = (yf > 0) ? 1 : -1;
+            int8_t dir = (dy > 0) ? 1 : -1;
 
             float dt = time - time0;
             float dt2 = dt * dt;
 
-            float y1 = yf + trackball_vel_y * dt - trackball_friction * dt2 * dir;
+            float y1 = dy + trackball_vel_y * dt - trackball_friction * dt2 * dir;
 
             if ((dir * y1) > usb_r)
             {
@@ -144,7 +144,7 @@ void TouchMouseJoystick::updateTrackball(uint32_t time)
             else
             {
                 y = usb_y;
-                yf = 0;
+                dy = 0;
                 trackball_vel_y = 0;
             }
         }

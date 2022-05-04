@@ -5,6 +5,8 @@
 
 #include <map>
 
+#include "util_func.h"
+
 namespace InputMapper
 {
     USB_Device device;
@@ -176,12 +178,12 @@ namespace InputMapper
             }
         }
     }
-
+    
     void mapTrackpad(uint8_t id, uint8_t fid, int32_t x, int32_t y, int32_t dx, int32_t dy, uint32_t time)
     {
         for (uint8_t c = 0; c < num_controls; ++c)
         {
-            int res = 0;
+            int8_t res = 0;
 
             switch(tcontrols[id][c]->getControlType())
             {
@@ -193,8 +195,6 @@ namespace InputMapper
                         TouchJoystick* tjoy = (TouchJoystick*)tcontrols[id][c];
 
                         res = tjoy->touch(fid, x, y);
-
-                        device.joystick(tjoy->getMappedId(), tjoy->getX(), tjoy->getY());
                     }
                     break;
                 
@@ -203,8 +203,6 @@ namespace InputMapper
                         TouchMouseJoystick* tmjoy = (TouchMouseJoystick*)tcontrols[id][c];
 
                         res = tmjoy->touch(fid, x, y, dx, dy, time);
-
-                        device.joystick(tmjoy->getMappedId(), tmjoy->getX(), tmjoy->getY());
                     }
                     break;
 
@@ -220,12 +218,6 @@ namespace InputMapper
                     }
                     break;
             }
-
-            // if control is touched return
-            if (res > 0)
-            {
-                return;
-            }
         }
     }
 
@@ -235,8 +227,6 @@ namespace InputMapper
         {
             for (uint8_t c = 0; c < num_controls; ++c)
             {
-                int res = 0;
-
                 switch(tcontrols[id][c]->getControlType())
                 {
                     case TouchControl::CT_MOUSE_JOYSTICK:
@@ -244,8 +234,6 @@ namespace InputMapper
                             TouchMouseJoystick* tmjoy = (TouchMouseJoystick*)tcontrols[id][c];
 
                             tmjoy->updateTrackball(time);
-
-                            device.joystick(tmjoy->getMappedId(), tmjoy->getX(), tmjoy->getY());
                         }
                         break;
 
@@ -293,6 +281,71 @@ namespace InputMapper
         for (auto it = xinput_counter.begin(); it != xinput_counter.end(); ++it)
         {
             device.button(it->first, it->second > 0? it->first : 0);
+        }
+
+        int32_t x[2] = {USB_Device::usb_joystick_x, USB_Device::usb_joystick_x};
+        int32_t y[2] = {USB_Device::usb_joystick_y, USB_Device::usb_joystick_y};
+        int32_t dx[2] = {0, 0};
+        int32_t dy[2] = {0, 0};
+        uint8_t count[2] = {0, 0};
+
+        for (uint8_t id = 0; id < 2; ++id)
+        {
+            for (uint8_t c = 0; c < num_controls; ++c)
+            {
+                switch(tcontrols[id][c]->getControlType())
+                {
+                    case TouchControl::CT_JOYSTICK:
+                        {
+                            TouchJoystick* tjoy = (TouchJoystick*)tcontrols[id][c];
+                            if (tjoy->getTouching() > 0)
+                            {
+                                x[tjoy->getMappedId()] += tjoy->getX();
+                                y[tjoy->getMappedId()] += tjoy->getY();
+                                ++count[tjoy->getMappedId()];
+                            }
+                        }
+                        break;
+
+                    case TouchControl::CT_MOUSE_JOYSTICK:
+                        {
+                            TouchMouseJoystick* tmjoy = (TouchMouseJoystick*)tcontrols[id][c];
+                            if (tmjoy->getTouching() == 2)
+                            {
+                                dx[tmjoy->getMappedId()] += tmjoy->getX();
+                                dy[tmjoy->getMappedId()] += tmjoy->getY();
+                            }
+                            else if (tmjoy->getTouching() == 3) // edje spin
+                            {
+                                x[tmjoy->getMappedId()] += tmjoy->getX();
+                                y[tmjoy->getMappedId()] += tmjoy->getY();
+                                ++count[tmjoy->getMappedId()];
+                            }
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        }
+
+        for (int j = 0; j < 2; ++j)
+        {
+            if (count[j] > 0)
+            {
+                x[j] = x[j] / count[j] + dx[j];
+                y[j] = y[j] / count[j] + dy[j];
+
+                clamp(x[j], USB_Device::usb_joystick_x - USB_Device::usb_joystick_r, USB_Device::usb_joystick_x + USB_Device::usb_joystick_r);
+                clamp(y[j], USB_Device::usb_joystick_y - USB_Device::usb_joystick_r, USB_Device::usb_joystick_y + USB_Device::usb_joystick_r);
+
+                device.joystick(j, x[j], y[j]);
+            }
+            else
+            {
+                device.joystick(j, USB_Device::usb_joystick_x + dx[j], USB_Device::usb_joystick_y + dy[j]);
+            }
         }
 
         device.sendReport();
