@@ -2,7 +2,7 @@
 
 #include <math.h>
 
-void TouchMouseJoustick::init(int32_t pos_x, int32_t pos_y, int32_t pos_r, int16_t usb_x, int16_t usb_y, int16_t usb_r)
+void TouchMouseJoystick::init(int32_t pos_x, int32_t pos_y, int32_t pos_r, int16_t usb_x, int16_t usb_y, int16_t usb_r)
 {
     TouchJoystick::init(pos_x, pos_y, pos_r, usb_x, usb_y, usb_r);
 
@@ -17,17 +17,17 @@ void TouchMouseJoustick::init(int32_t pos_x, int32_t pos_y, int32_t pos_r, int16
     this->time0 = 0;
 }
 
-void TouchMouseJoustick::setSensitivity(float sensitivity)
+void TouchMouseJoystick::setSensitivity(float sensitivity)
 {
     this->sensitivity = this->pos2usb * sensitivity;
 }
 
-void TouchMouseJoustick::setTrackballFriction(float trackball_friction)
+void TouchMouseJoystick::setTrackballFriction(float trackball_friction)
 {
     this->trackball_friction = trackball_friction;
 }
 
-int8_t TouchMouseJoustick::touch(int8_t fid, int32_t tx, int32_t ty, int32_t tdx, int32_t tdy, uint32_t time)
+int8_t TouchMouseJoystick::touch(int8_t fid, int32_t tx, int32_t ty, int32_t tdx, int32_t tdy, uint32_t time)
 {
     if (finger_id != -1 && finger_id != fid)
     {
@@ -93,7 +93,7 @@ int8_t TouchMouseJoustick::touch(int8_t fid, int32_t tx, int32_t ty, int32_t tdx
     return touching;
 }
 
-void TouchMouseJoustick::updateTrackball(uint32_t time)
+void TouchMouseJoystick::updateTrackball(uint32_t time)
 {
     if (trackball_friction > 0 && !touching)
     {

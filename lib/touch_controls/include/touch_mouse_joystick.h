@@ -3,7 +3,7 @@
 
 #include "touch_joystick.h"
 
-class TouchMouseJoustick : public TouchJoystick
+class TouchMouseJoystick : public TouchJoystick
 {
     protected:
 

@@ -9,7 +9,7 @@ namespace InputMapper
 {
     USB_Device device;
 
-    TouchMouseJoustick tjoystick_right;
+    TouchMouseJoystick tjoystick_right;
     TouchJoystick tjoystick_left;
     TouchDpad tdpad_right;
     TouchDpad tdpad_left;
@@ -200,7 +200,7 @@ namespace InputMapper
                 
                 case TouchControl::CT_MOUSE_JOYSTICK:
                     {
-                        TouchMouseJoustick* tmjoy = (TouchMouseJoustick*)tcontrols[id][c];
+                        TouchMouseJoystick* tmjoy = (TouchMouseJoystick*)tcontrols[id][c];
 
                         res = tmjoy->touch(fid, x, y, dx, dy, time);
 
@@ -241,7 +241,7 @@ namespace InputMapper
                 {
                     case TouchControl::CT_MOUSE_JOYSTICK:
                         {
-                            TouchMouseJoustick* tmjoy = (TouchMouseJoustick*)tcontrols[id][c];
+                            TouchMouseJoystick* tmjoy = (TouchMouseJoystick*)tcontrols[id][c];
 
                             tmjoy->updateTrackball(time);
 
