@@ -27,12 +27,12 @@ void TouchMouseJoystick::setTrackballFriction(float trackball_friction)
     this->trackball_friction = trackball_friction;
 }
 
-int8_t TouchMouseJoystick::touch(int8_t fid, int32_t tx, int32_t ty, int32_t tdx, int32_t tdy, uint32_t time)
+TouchMouseJoystick::TouchState TouchMouseJoystick::touch(int8_t fid, int32_t tx, int32_t ty, int32_t tdx, int32_t tdy, uint32_t time)
 {
     if (finger_id != -1 && finger_id != fid)
     {
-        touching = 0;
-        return 0;
+        touching = TS_NONE;
+        return touching;
     }
 
     tx -= pos_x;
@@ -47,8 +47,8 @@ int8_t TouchMouseJoystick::touch(int8_t fid, int32_t tx, int32_t ty, int32_t tdx
     if (t2 > pos_r2)
     {
         finger_id = -1;
-        touching = 0;
-        return 0;
+        touching = TS_NONE;
+        return touching;
     }
     else // inside the range
     {
@@ -56,7 +56,7 @@ int8_t TouchMouseJoystick::touch(int8_t fid, int32_t tx, int32_t ty, int32_t tdx
 
         if (t2 <= dead_zone_outer2)
         {
-            touching = 2;
+            touching = TS_RANGE;
 
             dx = sensitivity * -tdx;
             dy = sensitivity * -tdy;
@@ -75,7 +75,7 @@ int8_t TouchMouseJoystick::touch(int8_t fid, int32_t tx, int32_t ty, int32_t tdx
         }
         else // in bounds outside of outer dead zone - edge spin
         {
-            touching = 3;
+            touching = TS_EDGE_SPIN;
             
             float len = sqrt(t2);
 

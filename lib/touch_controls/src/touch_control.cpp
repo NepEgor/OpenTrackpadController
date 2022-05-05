@@ -16,5 +16,5 @@ void TouchControl::init(int32_t pos_x, int32_t pos_y, int32_t pos_r)
 
     this->finger_id = -1;
 
-    this->touching = 0;
+    this->touching = TS_NONE;
 }

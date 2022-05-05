@@ -26,7 +26,7 @@ class TouchMouseJoystick : public TouchJoystick
 
     void setTrackballFriction(float trackball_friction);
 
-    int8_t touch(int8_t fid, int32_t tx, int32_t ty, int32_t tdx, int32_t tdy, uint32_t time);
+    TouchState touch(int8_t fid, int32_t tx, int32_t ty, int32_t tdx, int32_t tdy, uint32_t time);
 
     void updateTrackball(uint32_t time);
 };

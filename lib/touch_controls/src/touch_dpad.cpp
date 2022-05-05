@@ -52,12 +52,12 @@ void TouchDpad::setInvertY(bool invert_y)
 #define XINPUT_DPAD_LEFT  0b0100
 #define XINPUT_DPAD_RIGHT 0b1000
 
-int8_t TouchDpad::touch(int8_t fid, int32_t tx, int32_t ty)
+TouchDpad::TouchState TouchDpad::touch(int8_t fid, int32_t tx, int32_t ty)
 {
     if (finger_id != -1 && finger_id != fid)
     {
-        touching = 0;
-        return 0;
+        touching = TS_NONE;
+        return touching;
     }
 
     tx -= pos_x;
@@ -71,8 +71,8 @@ int8_t TouchDpad::touch(int8_t fid, int32_t tx, int32_t ty)
     if (t2 > pos_r2)
     {
         finger_id = -1;
-        touching = 0;
-        return 0;
+        touching = TS_NONE;
+        return touching;
     }
     else // inside inner dead_zone
     {
@@ -80,11 +80,11 @@ int8_t TouchDpad::touch(int8_t fid, int32_t tx, int32_t ty)
 
         if (t2 < dead_zone_inner2)
         {
-            touching = 1;
+            touching = TS_INNER_DZ;
         }
         else // in bounds
         {
-            touching = 2;
+            touching = TS_RANGE;
 
             switch (dpad_type)
             {

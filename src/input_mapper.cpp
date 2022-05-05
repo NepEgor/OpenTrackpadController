@@ -298,7 +298,7 @@ namespace InputMapper
                     case TouchControl::CT_JOYSTICK:
                         {
                             TouchJoystick* tjoy = (TouchJoystick*)tcontrols[id][c];
-                            if (tjoy->getTouching() > 0)
+                            if (tjoy->getTouching() > TouchControl::TS_NONE)
                             {
                                 x[tjoy->getMappedId()] += tjoy->getX();
                                 y[tjoy->getMappedId()] += tjoy->getY();
@@ -310,12 +310,12 @@ namespace InputMapper
                     case TouchControl::CT_MOUSE_JOYSTICK:
                         {
                             TouchMouseJoystick* tmjoy = (TouchMouseJoystick*)tcontrols[id][c];
-                            if (tmjoy->getTouching() == 2)
+                            if (tmjoy->getTouching() == TouchControl::TS_RANGE)
                             {
                                 dx[tmjoy->getMappedId()] += tmjoy->getX();
                                 dy[tmjoy->getMappedId()] += tmjoy->getY();
                             }
-                            else if (tmjoy->getTouching() == 3) // edje spin
+                            else if (tmjoy->getTouching() == TouchControl::TS_EDGE_SPIN)
                             {
                                 x[tmjoy->getMappedId()] += tmjoy->getX();
                                 y[tmjoy->getMappedId()] += tmjoy->getY();

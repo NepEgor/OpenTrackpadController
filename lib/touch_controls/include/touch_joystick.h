@@ -44,7 +44,7 @@ class TouchJoystick : public TouchControl
     void setMappedId(uint8_t mapped_id);
     uint8_t getMappedId() {return mapped_id;}
 
-    int8_t touch(int8_t fid, int32_t tx, int32_t ty);
+    TouchState touch(int8_t fid, int32_t tx, int32_t ty);
 
     int16_t getX() {return x;}
     int16_t getY() {return y;}

@@ -7,11 +7,20 @@ class TouchControl
 {
     public:
 
-    enum ControlType: uint8_t{
+    enum ControlType: uint8_t
+    {
         CT_NONE,
         CT_JOYSTICK,
         CT_MOUSE_JOYSTICK,
         CT_DPAD,
+    };
+
+    enum TouchState: uint8_t
+    {
+        TS_NONE,
+        TS_INNER_DZ,
+        TS_RANGE,
+        TS_EDGE_SPIN,
     };
 
     protected:
@@ -25,7 +34,7 @@ class TouchControl
 
     int8_t finger_id;
 
-    int8_t touching;
+    TouchState touching;
 
     public:
 
@@ -34,7 +43,7 @@ class TouchControl
 
     virtual void init(int32_t pos_x, int32_t pos_y, int32_t pos_r);
 
-    virtual int8_t touch(int8_t fid, int32_t tx, int32_t ty) = 0;
+    virtual TouchState touch(int8_t fid, int32_t tx, int32_t ty) = 0;
 
     int8_t getTouching() {return touching;}
 
