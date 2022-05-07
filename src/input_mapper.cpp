@@ -106,7 +106,7 @@ namespace InputMapper
 
         tjoystick_right.init(pos_x, pos_y, pos_r, USB_Device::usb_joystick_x, USB_Device::usb_joystick_y, USB_Device::usb_joystick_r);
         //tjoystick_right.setDeadZoneInner(dead_zone_inner);
-        tjoystick_right.setTrackballFriction(1.f / 4000000.f);
+        tjoystick_right.setTrackballFriction(1.f / 8000000.f);
         //tjoystick_right.setTrackballFriction(0);
         tjoystick_right.setDeadZoneOuter(dead_zone_outer);
         tjoystick_right.setSensitivity(10);
@@ -310,16 +310,16 @@ namespace InputMapper
                     case TouchControl::CT_MOUSE_JOYSTICK:
                         {
                             TouchMouseJoystick* tmjoy = (TouchMouseJoystick*)tcontrols[id][c];
-                            if (tmjoy->getTouching() == TouchControl::TS_RANGE)
-                            {
-                                dx[tmjoy->getMappedId()] += tmjoy->getX();
-                                dy[tmjoy->getMappedId()] += tmjoy->getY();
-                            }
-                            else if (tmjoy->getTouching() == TouchControl::TS_EDGE_SPIN)
+                            if (tmjoy->getTouching() == TouchControl::TS_EDGE_SPIN)
                             {
                                 x[tmjoy->getMappedId()] += tmjoy->getX();
                                 y[tmjoy->getMappedId()] += tmjoy->getY();
                                 ++count[tmjoy->getMappedId()];
+                            }
+                            else
+                            {
+                                dx[tmjoy->getMappedId()] += tmjoy->getX();
+                                dy[tmjoy->getMappedId()] += tmjoy->getY();
                             }
                         }
                         break;
@@ -337,8 +337,8 @@ namespace InputMapper
                 x[j] = x[j] / count[j] + dx[j];
                 y[j] = y[j] / count[j] + dy[j];
 
-                clamp(x[j], USB_Device::usb_joystick_x - USB_Device::usb_joystick_r, USB_Device::usb_joystick_x + USB_Device::usb_joystick_r);
-                clamp(y[j], USB_Device::usb_joystick_y - USB_Device::usb_joystick_r, USB_Device::usb_joystick_y + USB_Device::usb_joystick_r);
+                x[j] = clamp(x[j], USB_Device::usb_joystick_x - USB_Device::usb_joystick_r, USB_Device::usb_joystick_x + USB_Device::usb_joystick_r);
+                y[j] = clamp(y[j], USB_Device::usb_joystick_y - USB_Device::usb_joystick_r, USB_Device::usb_joystick_y + USB_Device::usb_joystick_r);
 
                 device.joystick(j, x[j], y[j]);
             }
