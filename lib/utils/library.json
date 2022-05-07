@@ -2,9 +2,5 @@
     "name": "utils",
     "version": "1.0.0",
     "description": "",
-    "keywords": "",
-    "dependencies":
-    {
-        "hid_def" : "*"
-    }
+    "keywords": ""
 }
