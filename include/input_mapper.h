@@ -17,8 +17,6 @@ namespace InputMapper
     {
         START,
         SELECT,
-        TRACKPAD_LEFT,
-        TRACKPAD_RIGHT,
         BUMPER_LEFT,
         BUMPER_RIGHT,
         HOME,
@@ -26,6 +24,8 @@ namespace InputMapper
         GRIP_B,
         GRIP_X,
         GRIP_Y,
+        TRACKPAD_LEFT,
+        TRACKPAD_RIGHT,
     };
     
     extern uint16_t button_map[];

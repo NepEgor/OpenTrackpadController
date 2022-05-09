@@ -50,8 +50,6 @@ namespace InputMapper
     {
         USB_Device::START,
         USB_Device::SELECT,
-        USB_Device::FACE_B,
-        USB_Device::FACE_X,
         USB_Device::BUMPER_LEFT,
         USB_Device::BUMPER_RIGHT,
         USB_Device::HOME,
@@ -59,6 +57,18 @@ namespace InputMapper
         USB_Device::JOYSTICK_RIGHT,
         USB_Device::FACE_A,
         USB_Device::JOYSTICK_LEFT,
+    };
+
+    uint16_t button_tp_map[2][2] =
+    {
+        {
+            USB_Device::FACE_B,
+            USB_Device::JOYSTICK_LEFT,
+        },
+        {
+            USB_Device::FACE_X,
+            USB_Device::JOYSTICK_RIGHT,
+        }
     };
 
     uint16_t dpad_left_map[] = 
@@ -130,6 +140,18 @@ namespace InputMapper
             if (search == xinput_counter.end())
             {
                 xinput_counter.insert(std::make_pair(button_map[i], 0));
+            }
+        }
+
+        for (uint8_t id = 0; id < 2; ++id)
+        {
+            for (uint8_t c = 0; c < num_controls; ++c)
+            {
+                auto search = xinput_counter.find(button_tp_map[id][c]);
+                if (search == xinput_counter.end())
+                {
+                    xinput_counter.insert(std::make_pair(button_tp_map[id][c], 0));
+                }
             }
         }
 
@@ -272,8 +294,31 @@ namespace InputMapper
     }
 
     void mapButton(HardwareButtons button, bool value)
-    {
-        modifyCounter(button_map[button], value);
+    {   
+        uint8_t id;
+
+        switch (button)
+        {
+            case HardwareButtons::TRACKPAD_LEFT:
+                id = 0;
+                break;
+
+            case HardwareButtons::TRACKPAD_RIGHT:
+                id = 1;
+                break;
+            
+            default:
+                modifyCounter(button_map[button], value);
+                return;
+        }
+
+        for (uint8_t c = 0; c < num_controls; ++c)
+        {
+            if (tcontrols[id][c]->getTouching() > TouchControl::CT_NONE || !value)
+            {
+                modifyCounter(button_tp_map[id][c], value);
+            }
+        }
     }
 
     void sendReport()
