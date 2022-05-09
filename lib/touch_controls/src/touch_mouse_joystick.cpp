@@ -14,6 +14,8 @@ void TouchMouseJoystick::init(int32_t pos_x, int32_t pos_y, int32_t pos_r, int16
     this->trackball_vel_x = 0;
     this->trackball_vel_y = 0;
 
+    this->min_delta = 0;
+
     this->time0 = 0;
 }
 
@@ -25,6 +27,11 @@ void TouchMouseJoystick::setSensitivity(float sensitivity)
 void TouchMouseJoystick::setTrackballFriction(float trackball_friction)
 {
     this->trackball_friction = trackball_friction;
+}
+
+void TouchMouseJoystick::setMinDelta(int16_t min_delta)
+{
+    this->min_delta = min_delta;
 }
 
 TouchMouseJoystick::TouchState TouchMouseJoystick::touch(int8_t fid, int32_t tx, int32_t ty, int32_t tdx, int32_t tdy, uint32_t time)
@@ -63,6 +70,9 @@ TouchMouseJoystick::TouchState TouchMouseJoystick::touch(int8_t fid, int32_t tx,
 
             dx = dx > usb_r? usb_r : (dx < -usb_r? -usb_r : dx);
             dy = dy > usb_r? usb_r : (dy < -usb_r? -usb_r : dy);
+
+            dx = dx > -min_delta && dx < 0? -min_delta : (dx < min_delta && dx > 0? min_delta : dx);
+            dy = dy > -min_delta && dy < 0? -min_delta : (dy < min_delta && dy > 0? min_delta : dy);
 
             float dt = time - time0;
             time0 = time;

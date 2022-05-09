@@ -120,6 +120,7 @@ namespace InputMapper
         //tjoystick_right.setTrackballFriction(0);
         tjoystick_right.setDeadZoneOuter(dead_zone_outer);
         tjoystick_right.setSensitivity(10);
+        tjoystick_right.setMinDelta(1000);
         tjoystick_right.setMappedId(1);
 
         pos_x = 20.636 * ppmX;

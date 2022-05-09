@@ -16,6 +16,8 @@ class TouchMouseJoystick : public TouchJoystick
     float dx;
     float dy;
 
+    int16_t min_delta;
+
     float time0;
 
     public:
@@ -25,6 +27,8 @@ class TouchMouseJoystick : public TouchJoystick
     void setSensitivity(float sensitivity);
 
     void setTrackballFriction(float trackball_friction);
+
+    void setMinDelta(int16_t min_delta);
 
     TouchState touch(int8_t fid, int32_t tx, int32_t ty, int32_t tdx, int32_t tdy, uint32_t time);
 
