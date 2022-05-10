@@ -126,6 +126,8 @@ namespace InputMapper
         pos_x = 20.636 * ppmX;
         pos_y = 20.636 * ppmY;
         pos_r = 45 * ppmX / 2;
+        dead_zone_inner = 8 * ppmX;
+
         tdpad_right.init(pos_x, pos_y, pos_r, TouchDpad::DPAD_TYPE_SECTOR_4);
         tdpad_right.setDeadZoneInner(dead_zone_inner);
 
@@ -294,7 +296,7 @@ namespace InputMapper
         device.triggers(mapped_value);
     }
 
-    void mapButton(HardwareButtons button, bool value)
+    bool mapButton(HardwareButtons button, bool value)
     {   
         uint8_t id;
 
@@ -310,16 +312,21 @@ namespace InputMapper
             
             default:
                 modifyCounter(button_map[button], value);
-                return;
+                return true;
         }
+
+        uint8_t res = 0;
 
         for (uint8_t c = 0; c < num_controls; ++c)
         {
             if (tcontrols[id][c]->getTouching() > TouchControl::CT_NONE || !value)
             {
                 modifyCounter(button_tp_map[id][c], value);
+                ++res;
             }
         }
+
+        return res;
     }
 
     void sendReport()

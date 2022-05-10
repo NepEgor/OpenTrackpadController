@@ -125,8 +125,10 @@ void loop()
         uint8_t value = digitalRead(pin_button[i]);
         if (value != button_state[i / 2])
         {
-            button_state[i / 2] = value;
-            InputMapper::mapButton((InputMapper::HardwareButtons)(i / 2), value == pin_button[i + 1]);
+            if (InputMapper::mapButton((InputMapper::HardwareButtons)(i / 2), value == pin_button[i + 1]))
+            {
+                button_state[i / 2] = value;
+            }
         }
     }
 

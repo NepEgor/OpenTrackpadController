@@ -30,7 +30,7 @@ namespace InputMapper
     
     extern uint16_t button_map[];
 
-    void mapButton(HardwareButtons button, bool value);
+    bool mapButton(HardwareButtons button, bool value);
 
     // void mapGyro();
 
