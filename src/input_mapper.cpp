@@ -329,6 +329,11 @@ namespace InputMapper
         return res;
     }
 
+    void mapGyro(int32_t x, int32_t y, int32_t z)
+    {
+        device.joystick(1, x, y);
+    }
+
     void sendReport()
     {   
         for (auto it = xinput_counter.begin(); it != xinput_counter.end(); ++it)

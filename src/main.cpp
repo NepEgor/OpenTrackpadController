@@ -1,5 +1,8 @@
 #include <Arduino.h>
 
+#include "Wire.h"
+const uint8_t MPU_addr = 0x68;
+
 #include "trackpad.h"
 #include "input_mapper.h"
 
@@ -56,6 +59,12 @@ void setup()
     trackpad_maxX = trackpad[0].getMaxX();
     trackpad_maxY = trackpad[0].getMaxY();
     
+    Wire.begin();
+    Wire.beginTransmission(MPU_addr);
+    Wire.write(0x6B);  // PWR_MGMT_1 register
+    Wire.write(0);     // set to zero (wakes up the MPU-6050)
+    Wire.endTransmission(true);
+
     InputMapper::begin();
 
     // Turn off LED
@@ -115,8 +124,6 @@ void loop()
         }
     }
     
-    InputMapper::update(micros());
-
     uint32_t triggers[] = {analogRead(pin_trigger[0]), analogRead(pin_trigger[1])};
     InputMapper::mapTriggers(triggers);
 
@@ -131,6 +138,20 @@ void loop()
             }
         }
     }
+
+    int16_t data[7];
+    Wire.beginTransmission(MPU_addr);
+    Wire.write(0x3B);  // starting with register 0x3B (ACCEL_XOUT_H)
+    Wire.endTransmission(false);
+    Wire.requestFrom(MPU_addr, 14, true); // request a total of 14 registers
+    for (byte i = 0; i < 7; i++) {
+        data[i] = Wire.read() << 8 | Wire.read();
+    }
+
+    //InputMapper::mapAccel(data[0], data[1], data[2]);
+    InputMapper::mapGyro(data[4], data[5], data[6]);
+
+    InputMapper::update(micros());
 
     InputMapper::sendReport();
 }
