@@ -32,7 +32,8 @@ namespace InputMapper
 
     bool mapButton(HardwareButtons button, bool value);
 
-    void mapGyro(int32_t x, int32_t y, int32_t z);
+    bool gyroEnabled();
+    void mapGyro(int16_t x, int16_t y, int16_t z);
 
     void sendReport();
 }

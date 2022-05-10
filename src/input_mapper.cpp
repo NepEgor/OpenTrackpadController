@@ -329,9 +329,15 @@ namespace InputMapper
         return res;
     }
 
-    void mapGyro(int32_t x, int32_t y, int32_t z)
+    bool gyroEnabled()
     {
-        device.joystick(1, x, y);
+        // how do I map this?
+        return tjoystick_right.getTouching() > TouchControl::CT_NONE;
+    }
+
+    void mapGyro(int16_t x, int16_t y, int16_t z)
+    {
+        //device.joystick(1, x, y);
     }
 
     void sendReport()

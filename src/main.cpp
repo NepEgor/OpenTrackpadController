@@ -1,7 +1,8 @@
 #include <Arduino.h>
 
-#include "Wire.h"
-const uint8_t MPU_addr = 0x68;
+#include <MPU6050.h>
+
+MPU6050 mpu;
 
 #include "trackpad.h"
 #include "input_mapper.h"
@@ -59,11 +60,21 @@ void setup()
     trackpad_maxX = trackpad[0].getMaxX();
     trackpad_maxY = trackpad[0].getMaxY();
     
-    Wire.begin();
-    Wire.beginTransmission(MPU_addr);
-    Wire.write(0x6B);  // PWR_MGMT_1 register
-    Wire.write(0);     // set to zero (wakes up the MPU-6050)
-    Wire.endTransmission(true);
+    #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
+        Wire.begin();
+    #elif I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_FASTWIRE
+        Fastwire::setup(400, true);
+    #endif
+
+    mpu.initialize();
+    Serial.println(mpu.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
+
+    /*
+    mpu.setXGyroOffset(0);
+    mpu.setYGyroOffset(0);
+    mpu.setZGyroOffset(0);
+    */
+    mpu.CalibrateGyro();
 
     InputMapper::begin();
 
@@ -139,17 +150,12 @@ void loop()
         }
     }
 
-    int16_t data[7];
-    Wire.beginTransmission(MPU_addr);
-    Wire.write(0x3B);  // starting with register 0x3B (ACCEL_XOUT_H)
-    Wire.endTransmission(false);
-    Wire.requestFrom(MPU_addr, 14, true); // request a total of 14 registers
-    for (byte i = 0; i < 7; i++) {
-        data[i] = Wire.read() << 8 | Wire.read();
+    if (InputMapper::gyroEnabled())
+    {
+        int16_t x, y, z;
+        mpu.getRotation(&x, &y, &z);
+        InputMapper::mapGyro(x, y, z);
     }
-
-    //InputMapper::mapAccel(data[0], data[1], data[2]);
-    InputMapper::mapGyro(data[4], data[5], data[6]);
 
     InputMapper::update(micros());
 
