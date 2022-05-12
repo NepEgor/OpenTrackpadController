@@ -1,9 +1,5 @@
 #include <Arduino.h>
 
-#include <MPU6050.h>
-
-MPU6050 mpu;
-
 #include "trackpad.h"
 #include "input_mapper.h"
 
@@ -29,9 +25,16 @@ uint8_t button_state[sizeof(pin_button) / 2] = {0};
 const uint8_t pin_trackpad_data[2]  = {PB5, PB9};
 const uint8_t pin_trackpad_clock[2] = {PB4, PB8};
 
+const uint8_t gyro_int = PC14;
+
 TrackPad trackpad[2]; // 0 - left, 1 - right
 
 int32_t trackpad_maxX, trackpad_maxY;
+
+bool mpuInterrupt = false;
+void dmpDataReady() {
+    mpuInterrupt = true;
+}
 
 void setup()
 {
@@ -59,22 +62,8 @@ void setup()
 
     trackpad_maxX = trackpad[0].getMaxX();
     trackpad_maxY = trackpad[0].getMaxY();
-    
-    #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
-        Wire.begin();
-    #elif I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_FASTWIRE
-        Fastwire::setup(400, true);
-    #endif
 
-    mpu.initialize();
-    Serial.println(mpu.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
-
-    /*
-    mpu.setXGyroOffset(0);
-    mpu.setYGyroOffset(0);
-    mpu.setZGyroOffset(0);
-    */
-    mpu.CalibrateGyro();
+    attachInterrupt(gyro_int, dmpDataReady, RISING);
 
     InputMapper::begin();
 
@@ -150,14 +139,7 @@ void loop()
         }
     }
 
-    if (InputMapper::gyroEnabled())
-    {
-        int16_t x, y, z;
-        mpu.getRotation(&x, &y, &z);
-        InputMapper::mapGyro(x, y, z);
-    }
-
-    InputMapper::update(micros());
+    InputMapper::update(micros(), mpuInterrupt);
 
     InputMapper::sendReport();
 }

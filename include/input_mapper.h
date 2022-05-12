@@ -9,7 +9,7 @@ namespace InputMapper
 
     void mapTrackpad(uint8_t id, uint8_t fid, int32_t x, int32_t y, int32_t dx, int32_t dy, uint32_t time);
 
-    void update(uint32_t time);
+    void update(uint32_t time, bool &gyro_ready);
 
     void mapTriggers(uint32_t value[2]);
 
@@ -31,9 +31,6 @@ namespace InputMapper
     extern uint16_t button_map[];
 
     bool mapButton(HardwareButtons button, bool value);
-
-    bool gyroEnabled();
-    void mapGyro(int16_t x, int16_t y, int16_t z);
 
     void sendReport();
 }

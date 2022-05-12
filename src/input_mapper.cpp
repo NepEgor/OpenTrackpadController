@@ -2,6 +2,7 @@
 
 #include "usb_device.h"
 #include "touch_controls_all.h"
+#include "gyro.h"
 
 #include <map>
 
@@ -29,6 +30,9 @@ namespace InputMapper
     };
 
     const uint8_t num_controls = sizeof(tcontrols) / sizeof(TouchControl*[2]);
+
+    Gyro gyro;
+
     /*
     uint16_t button_map[] =
     {
@@ -170,6 +174,10 @@ namespace InputMapper
             }
         }
 
+        gyro.init();
+        //gyro.setEnabledCallback([]{ return tjoystick_right.getTouching() > TouchControl::CT_NONE; });
+        gyro.setEnabledCallback([]{ return xinput_counter[USB_Device::BUMPER_RIGHT] > 0; });
+
         device.begin();
     }
 
@@ -246,7 +254,7 @@ namespace InputMapper
         }
     }
 
-    void update(uint32_t time)
+    void update(uint32_t time, bool &gyro_ready)
     {
         for (uint8_t id = 0; id < 2; ++id)
         {
@@ -267,6 +275,12 @@ namespace InputMapper
                 }
 
             }
+        }
+
+        if (gyro_ready)
+        {
+            gyro.update();
+            gyro_ready = false;
         }
     }
 
@@ -329,13 +343,7 @@ namespace InputMapper
         return res;
     }
 
-    bool gyroEnabled()
-    {
-        // how do I map this?
-        return tjoystick_right.getTouching() > TouchControl::CT_NONE;
-    }
-
-    void mapGyro(int16_t x, int16_t y, int16_t z)
+    void mapGyro()
     {
         //device.joystick(1, x, y);
     }
@@ -392,6 +400,12 @@ namespace InputMapper
                         break;
                 }
             }
+        }
+
+        if (gyro.Enabled())
+        {
+            dx[1] += gyro.getX();
+            dy[1] += gyro.getY();
         }
 
         for (int j = 0; j < 2; ++j)
