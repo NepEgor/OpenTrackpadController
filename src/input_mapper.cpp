@@ -175,8 +175,8 @@ namespace InputMapper
         }
 
         gyro.init();
-        //gyro.setEnabledCallback([]{ return tjoystick_right.getTouching() > TouchControl::CT_NONE; });
-        gyro.setEnabledCallback([]{ return xinput_counter[USB_Device::BUMPER_RIGHT] > 0; });
+        gyro.setEnabledCallback([]{ return tjoystick_right.getTouching() > TouchControl::CT_NONE; });
+        //gyro.setEnabledCallback([]{ return xinput_counter[USB_Device::BUMPER_RIGHT] > 0; });
 
         device.begin();
     }
@@ -254,7 +254,17 @@ namespace InputMapper
         }
     }
 
-    void update(uint32_t time, bool &gyro_ready)
+    bool gyroEnabled()
+    {
+        return gyro.Enabled();
+    }
+
+    void gyroUpdate()
+    {
+        gyro.update();
+    }
+
+    void update(uint32_t time)
     {
         for (uint8_t id = 0; id < 2; ++id)
         {
@@ -275,12 +285,6 @@ namespace InputMapper
                 }
 
             }
-        }
-
-        if (gyro_ready)
-        {
-            gyro.update();
-            gyro_ready = false;
         }
     }
 

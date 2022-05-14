@@ -53,9 +53,9 @@ void Gyro::init()
     y_filter.init(filter_size);
     z_filter.init(filter_size);
 
-    mpu.setIntDataReadyEnabled(1);
+    //mpu.setIntDataReadyEnabled(1);
 
-    mpu.setDLPFMode(MPU6050_DLPF_BW_5);
+    //mpu.setDLPFMode(MPU6050_DLPF_BW_5);
 
     _Enabled = [] { return false; };
 }
@@ -67,12 +67,9 @@ void Gyro::setEnabledCallback(bool (*Enabled)())
 
 void Gyro::update()
 {
-    if (Enabled())
-    {
-        mpu.getRotation(&x, &y, &z);
+    mpu.getRotation(&x, &y, &z);
 
-        x = x_filter.filter(x);
-        y = y_filter.filter(y);
-        z = z_filter.filter(z);
-    }
+    x = x_filter.filter(x);
+    y = y_filter.filter(y);
+    z = z_filter.filter(z);
 }

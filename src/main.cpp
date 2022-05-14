@@ -31,11 +31,6 @@ TrackPad trackpad[2]; // 0 - left, 1 - right
 
 int32_t trackpad_maxX, trackpad_maxY;
 
-bool mpuInterrupt = false;
-void dmpDataReady() {
-    mpuInterrupt = true;
-}
-
 void setup()
 {
     // Turn on LED
@@ -62,8 +57,6 @@ void setup()
 
     trackpad_maxX = trackpad[0].getMaxX();
     trackpad_maxY = trackpad[0].getMaxY();
-
-    attachInterrupt(gyro_int, dmpDataReady, RISING);
 
     InputMapper::begin();
 
@@ -123,7 +116,7 @@ void loop()
             }
         }
     }
-    
+
     uint32_t triggers[] = {analogRead(pin_trigger[0]), analogRead(pin_trigger[1])};
     InputMapper::mapTriggers(triggers);
 
@@ -139,7 +132,18 @@ void loop()
         }
     }
 
-    InputMapper::update(micros(), mpuInterrupt);
+    static uint32_t gyro_start = micros();
+    if (InputMapper::gyroEnabled())
+    {
+        uint32_t gyro_now = micros();
+        if (gyro_now - gyro_start > 1000)
+        {
+            gyro_start = gyro_now;
+            InputMapper::gyroUpdate();
+        }
+    }
+
+    InputMapper::update(micros());
 
     InputMapper::sendReport();
 }

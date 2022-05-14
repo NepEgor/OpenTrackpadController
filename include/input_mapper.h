@@ -9,7 +9,10 @@ namespace InputMapper
 
     void mapTrackpad(uint8_t id, uint8_t fid, int32_t x, int32_t y, int32_t dx, int32_t dy, uint32_t time);
 
-    void update(uint32_t time, bool &gyro_ready);
+    bool gyroEnabled();
+    void gyroUpdate();
+
+    void update(uint32_t time);
 
     void mapTriggers(uint32_t value[2]);
 
