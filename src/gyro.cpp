@@ -1,6 +1,8 @@
 #include "gyro.h"
 
 #include <stdint.h>
+
+#include "util_func.h"
  
 void Gyro::Filter::init(uint8_t size)
 {
@@ -28,6 +30,13 @@ int16_t Gyro::Filter::filter(int16_t x)
     pointer = (pointer + 1) % size;
 
     return sum / size;
+}
+
+Gyro::Gyro()
+{
+    invert_x = 1;
+    invert_y = 1;
+    invert_z = 1;
 }
 
 void Gyro::init()
@@ -60,16 +69,33 @@ void Gyro::init()
     _Enabled = [] { return false; };
 }
 
-void Gyro::setEnabledCallback(bool (*Enabled)())
-{
-    this->_Enabled = Enabled;
-}
-
 void Gyro::update()
 {
     mpu.getRotation(&x, &y, &z);
 
-    x = x_filter.filter(x);
-    y = y_filter.filter(y);
-    z = z_filter.filter(z);
+    x = x_filter.filter(x) * invert_x;
+    y = y_filter.filter(y) * invert_y;
+    z = z_filter.filter(z) * invert_z;
+}
+
+int32_t Gyro::getDX()
+{
+    switch (bind_to_x)
+    {
+        case BIND_X:
+            return x;
+
+        case BIND_Z:
+            return z;
+
+        case BIND_XZ:
+            return (int32_t)x + (int32_t)z;
+    }
+
+    return 0;
+}
+
+int16_t Gyro::getDY()
+{
+    return y;
 }

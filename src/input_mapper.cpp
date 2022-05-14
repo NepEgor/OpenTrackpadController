@@ -177,6 +177,10 @@ namespace InputMapper
         gyro.init();
         gyro.setEnabledCallback([]{ return tjoystick_right.getTouching() > TouchControl::CT_NONE; });
         //gyro.setEnabledCallback([]{ return xinput_counter[USB_Device::BUMPER_RIGHT] > 0; });
+        gyro.setMappedId(1);
+        gyro.setInvertX();
+        gyro.setInvertY();
+        gyro.setBindToX(Gyro::BIND_XZ);
 
         device.begin();
     }
@@ -347,11 +351,6 @@ namespace InputMapper
         return res;
     }
 
-    void mapGyro()
-    {
-        //device.joystick(1, x, y);
-    }
-
     void sendReport()
     {   
         for (auto it = xinput_counter.begin(); it != xinput_counter.end(); ++it)
@@ -408,8 +407,8 @@ namespace InputMapper
 
         if (gyro.Enabled())
         {
-            dx[1] += gyro.getX();
-            dy[1] += gyro.getY();
+            dx[gyro.getMappedId()] += gyro.getDX();
+            dy[gyro.getMappedId()] += gyro.getDY();
         }
 
         for (int j = 0; j < 2; ++j)
@@ -418,16 +417,17 @@ namespace InputMapper
             {
                 x[j] = x[j] / count[j] + dx[j];
                 y[j] = y[j] / count[j] + dy[j];
-
-                x[j] = clamp(x[j], USB_Device::usb_joystick_x - USB_Device::usb_joystick_r, USB_Device::usb_joystick_x + USB_Device::usb_joystick_r);
-                y[j] = clamp(y[j], USB_Device::usb_joystick_y - USB_Device::usb_joystick_r, USB_Device::usb_joystick_y + USB_Device::usb_joystick_r);
-
-                device.joystick(j, x[j], y[j]);
             }
             else
             {
-                device.joystick(j, USB_Device::usb_joystick_x + dx[j], USB_Device::usb_joystick_y + dy[j]);
+                x[j] = USB_Device::usb_joystick_x + dx[j];
+                y[j] = USB_Device::usb_joystick_y + dy[j];
             }
+
+            x[j] = clamp(x[j], USB_Device::usb_joystick_x - USB_Device::usb_joystick_r, USB_Device::usb_joystick_x + USB_Device::usb_joystick_r);
+            y[j] = clamp(y[j], USB_Device::usb_joystick_y - USB_Device::usb_joystick_r, USB_Device::usb_joystick_y + USB_Device::usb_joystick_r);
+
+            device.joystick(j, x[j], y[j]);
         }
 
         device.sendReport();
