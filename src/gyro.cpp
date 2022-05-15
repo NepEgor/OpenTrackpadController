@@ -37,6 +37,8 @@ Gyro::Gyro()
     invert_x = 1;
     invert_y = 1;
     invert_z = 1;
+
+    time0 = 0;
 }
 
 void Gyro::init()
@@ -69,30 +71,42 @@ void Gyro::init()
     _Enabled = [] { return false; };
 }
 
-void Gyro::update()
+void Gyro::update(uint32_t time)
 {
-    mpu.getRotation(&x, &y, &z);
+    if (Enabled())
+    {
+        if (time - time0 > delay)
+        {
+            time0 = time;
 
-    x = x_filter.filter(x) * invert_x;
-    y = y_filter.filter(y) * invert_y;
-    z = z_filter.filter(z) * invert_z;
+            mpu.getRotation(&x, &y, &z);
+
+            x = x_filter.filter(x) * invert_x;
+            y = y_filter.filter(y) * invert_y;
+            z = z_filter.filter(z) * invert_z;
+        }
+    }
 }
 
 int32_t Gyro::getDX()
 {
+    int32_t dx;
+
     switch (bind_to_x)
     {
         case BIND_X:
-            return x;
+            dx = x;
+            break;
 
         case BIND_Z:
-            return z;
+            dx = z;
+            break;
 
         case BIND_XZ:
-            return (int32_t)x + (int32_t)z;
+            dx = (int32_t)x + (int32_t)z;
     }
 
-    return 0;
+    return dx;
 }
 
 int16_t Gyro::getDY()

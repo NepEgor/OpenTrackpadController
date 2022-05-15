@@ -45,6 +45,8 @@ class Gyro
 
     MPU6050 mpu;
 
+    uint32_t time0;
+    uint32_t delay;
     bool (*_Enabled)();
 
     public:
@@ -54,18 +56,20 @@ class Gyro
     void init();
 
     void setEnabledCallback(bool (*_Enabled)()) { this->_Enabled = _Enabled; }
-    bool Enabled() { return _Enabled(); };
+    bool Enabled() { return _Enabled(); }
 
-    void setMappedId(uint8_t mapped_id) { this->mapped_id = mapped_id; };
+    void setMappedId(uint8_t mapped_id) { this->mapped_id = mapped_id; }
     uint8_t getMappedId() { return mapped_id; }
 
-    void setInvertX(bool invert_x = true) { this->invert_x = invert_x? -1 : 1; };
-    void setInvertY(bool invert_y = true) { this->invert_y = invert_y? -1 : 1; };
-    void setInvertZ(bool invert_z = true) { this->invert_z = invert_z? -1 : 1; };
+    void setInvertX(bool invert_x = true) { this->invert_x = invert_x? -1 : 1; }
+    void setInvertY(bool invert_y = true) { this->invert_y = invert_y? -1 : 1; }
+    void setInvertZ(bool invert_z = true) { this->invert_z = invert_z? -1 : 1; }
 
-    void setBindToX(BindToX bind_to_x) { this->bind_to_x = bind_to_x; };
+    void setBindToX(BindToX bind_to_x) { this->bind_to_x = bind_to_x; }
 
-    void update();
+    void setDelay(uint32_t delay) { this->delay = delay; }
+
+    void update(uint32_t time);
 
     int16_t getX() { return x; }
     int16_t getY() { return y; }

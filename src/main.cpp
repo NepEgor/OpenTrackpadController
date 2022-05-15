@@ -132,17 +132,6 @@ void loop()
         }
     }
 
-    static uint32_t gyro_start = micros();
-    if (InputMapper::gyroEnabled())
-    {
-        uint32_t gyro_now = micros();
-        if (gyro_now - gyro_start > 1000)
-        {
-            gyro_start = gyro_now;
-            InputMapper::gyroUpdate();
-        }
-    }
-
     InputMapper::update(micros());
 
     InputMapper::sendReport();
