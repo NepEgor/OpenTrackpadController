@@ -27,10 +27,14 @@ class Gyro
 
     Filter x_filter, y_filter, z_filter;
 
-    int16_t x, y, z;
+    int32_t x, y, z;
     uint8_t mapped_id;
 
     int8_t invert_x, invert_y, invert_z;
+
+    float sensitivity;
+    int16_t deadzone;
+    int16_t min_delta;
 
     public:
     enum BindToX : uint8_t
@@ -65,6 +69,10 @@ class Gyro
     void setInvertY(bool invert_y = true) { this->invert_y = invert_y? -1 : 1; }
     void setInvertZ(bool invert_z = true) { this->invert_z = invert_z? -1 : 1; }
 
+    void setSensitivity(float sensitivity) { this->sensitivity = sensitivity; }
+    void setDeadzone(int16_t deadzone) { this->deadzone = deadzone; }
+    void setMinDelta(int16_t min_delta) { this->min_delta = min_delta; }
+
     void setBindToX(BindToX bind_to_x) { this->bind_to_x = bind_to_x; }
 
     void setDelay(uint32_t delay) { this->delay = delay; }
@@ -75,7 +83,7 @@ class Gyro
     int16_t getY() { return y; }
     int16_t getZ() { return z; }
 
-    int32_t getDX();
+    int16_t getDX();
     int16_t getDY();
 };
 

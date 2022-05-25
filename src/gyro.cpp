@@ -38,7 +38,14 @@ Gyro::Gyro()
     invert_y = 1;
     invert_z = 1;
 
+    sensitivity = 1.0f;
+
     time0 = 0;
+    delay = 0;
+
+    bind_to_x = BIND_X;
+
+    _Enabled = [] { return false; };
 }
 
 void Gyro::init()
@@ -57,7 +64,7 @@ void Gyro::init()
     mpu.setYGyroOffset(0);
     mpu.setZGyroOffset(0);
     */
-    mpu.CalibrateGyro();
+    mpu.CalibrateGyro(6);
 
     uint8_t filter_size = 5;
     x_filter.init(filter_size);
@@ -67,28 +74,35 @@ void Gyro::init()
     //mpu.setIntDataReadyEnabled(1);
 
     //mpu.setDLPFMode(MPU6050_DLPF_BW_5);
-
-    _Enabled = [] { return false; };
 }
 
 void Gyro::update(uint32_t time)
 {
     if (Enabled())
     {
-        if (time - time0 > delay)
+        float dt = time - time0;
+        if (dt > delay)
         {
             time0 = time;
 
+            int16_t x, y, z;
+
             mpu.getRotation(&x, &y, &z);
 
-            x = x_filter.filter(x) * invert_x;
-            y = y_filter.filter(y) * invert_y;
-            z = z_filter.filter(z) * invert_z;
+            //x = x_filter.filter(x) * invert_x;
+            //y = y_filter.filter(y) * invert_y;
+            //z = z_filter.filter(z) * invert_z;
+
+            dt /= 1000.0f;
+
+            this->x = x * sensitivity * invert_x * dt;
+            this->y = y * sensitivity * invert_y * dt;
+            this->z = z * sensitivity * invert_z * dt;
         }
     }
 }
 
-int32_t Gyro::getDX()
+int16_t Gyro::getDX()
 {
     int32_t dx;
 
@@ -103,13 +117,44 @@ int32_t Gyro::getDX()
             break;
 
         case BIND_XZ:
-            dx = (int32_t)x + (int32_t)z;
+            dx = x + z;
     }
-
-    return dx;
+    
+    if (dx > -deadzone && dx < deadzone)
+    {
+        dx = 0;
+    }
+    else
+    if (dx >= deadzone && dx < min_delta)
+    {
+        dx = min_delta;
+    }
+    else
+    if (dx <= -deadzone && dx > -min_delta)
+    {
+        dx = -min_delta;
+    }
+    
+    return clamp(dx, -32767, 32767);
 }
 
 int16_t Gyro::getDY()
 {
-    return y;
+    
+    if (y > -deadzone && y < deadzone)
+    {
+        y = 0;
+    }
+    else
+    if (y >= deadzone && y < min_delta)
+    {
+        y = min_delta;
+    }
+    else
+    if (y <= -deadzone && y > -min_delta)
+    {
+        y = -min_delta;
+    }
+    
+    return clamp(y, -32767, 32767);
 }
