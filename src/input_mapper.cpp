@@ -2,6 +2,7 @@
 
 #include "usb_device.h"
 #include "touch_controls_all.h"
+#include "gyro.h"
 
 #include <map>
 
@@ -29,6 +30,9 @@ namespace InputMapper
     };
 
     const uint8_t num_controls = sizeof(tcontrols) / sizeof(TouchControl*[2]);
+
+    Gyro gyro;
+
     /*
     uint16_t button_map[] =
     {
@@ -170,6 +174,18 @@ namespace InputMapper
             }
         }
 
+        gyro.init();
+        gyro.setEnabledCallback([]{ return tjoystick_right.getTouching() > TouchControl::CT_NONE; });
+        //gyro.setEnabledCallback([]{ return xinput_counter[USB_Device::BUMPER_RIGHT] > 0; });
+        gyro.setMappedId(1);
+        //gyro.setInvertX();
+        gyro.setInvertY();
+        gyro.setSensitivity(1.0f);
+        gyro.setDeadzone(0);
+        gyro.setMinDelta(1000);
+        gyro.setBindToX(Gyro::BIND_XZ);
+        gyro.setDelay(1000);
+
         device.begin();
     }
 
@@ -268,6 +284,8 @@ namespace InputMapper
 
             }
         }
+
+        gyro.update(time);
     }
 
     void mapTriggers(uint32_t value[2])
@@ -383,22 +401,29 @@ namespace InputMapper
             }
         }
 
+        if (gyro.Enabled())
+        {
+            dx[gyro.getMappedId()] += gyro.getDX();
+            dy[gyro.getMappedId()] += gyro.getDY();
+        }
+
         for (int j = 0; j < 2; ++j)
         {
             if (count[j] > 0)
             {
                 x[j] = x[j] / count[j] + dx[j];
                 y[j] = y[j] / count[j] + dy[j];
-
-                x[j] = clamp(x[j], USB_Device::usb_joystick_x - USB_Device::usb_joystick_r, USB_Device::usb_joystick_x + USB_Device::usb_joystick_r);
-                y[j] = clamp(y[j], USB_Device::usb_joystick_y - USB_Device::usb_joystick_r, USB_Device::usb_joystick_y + USB_Device::usb_joystick_r);
-
-                device.joystick(j, x[j], y[j]);
             }
             else
             {
-                device.joystick(j, USB_Device::usb_joystick_x + dx[j], USB_Device::usb_joystick_y + dy[j]);
+                x[j] = USB_Device::usb_joystick_x + dx[j];
+                y[j] = USB_Device::usb_joystick_y + dy[j];
             }
+
+            x[j] = clamp(x[j], USB_Device::usb_joystick_x - USB_Device::usb_joystick_r, USB_Device::usb_joystick_x + USB_Device::usb_joystick_r);
+            y[j] = clamp(y[j], USB_Device::usb_joystick_y - USB_Device::usb_joystick_r, USB_Device::usb_joystick_y + USB_Device::usb_joystick_r);
+
+            device.joystick(j, x[j], y[j]);
         }
 
         device.sendReport();

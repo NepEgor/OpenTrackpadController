@@ -25,6 +25,8 @@ uint8_t button_state[sizeof(pin_button) / 2] = {0};
 const uint8_t pin_trackpad_data[2]  = {PB5, PB9};
 const uint8_t pin_trackpad_clock[2] = {PB4, PB8};
 
+const uint8_t gyro_int = PC14;
+
 TrackPad trackpad[2]; // 0 - left, 1 - right
 
 int32_t trackpad_maxX, trackpad_maxY;
@@ -55,7 +57,7 @@ void setup()
 
     trackpad_maxX = trackpad[0].getMaxX();
     trackpad_maxY = trackpad[0].getMaxY();
-    
+
     InputMapper::begin();
 
     // Turn off LED
@@ -114,8 +116,6 @@ void loop()
             }
         }
     }
-    
-    InputMapper::update(micros());
 
     uint32_t triggers[] = {analogRead(pin_trigger[0]), analogRead(pin_trigger[1])};
     InputMapper::mapTriggers(triggers);
@@ -131,6 +131,8 @@ void loop()
             }
         }
     }
+
+    InputMapper::update(micros());
 
     InputMapper::sendReport();
 }

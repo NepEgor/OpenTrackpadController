@@ -32,8 +32,6 @@ namespace InputMapper
 
     bool mapButton(HardwareButtons button, bool value);
 
-    // void mapGyro();
-
     void sendReport();
 }
 
