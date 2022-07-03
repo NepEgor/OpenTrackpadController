@@ -13,6 +13,7 @@ namespace InputMapper
     USB_Device device;
 
     TouchMouseJoystick tjoystick_right;
+    TouchJoystick tjoystick_right_wheel;
     TouchJoystick tjoystick_left;
     TouchDpad tdpad_right;
     TouchDpad tdpad_left;
@@ -116,6 +117,12 @@ namespace InputMapper
 
         pos_x = 31.25 * ppmX;
         pos_y = (103.9 - 31.25) * ppmY;
+
+        tjoystick_right_wheel.init(pos_x, pos_y, pos_r, USB_Device::usb_joystick_x, USB_Device::usb_joystick_y, USB_Device::usb_joystick_r);
+        tjoystick_right_wheel.setDeadZoneInner(0);
+        tjoystick_right_wheel.setDeadZoneOuter(dead_zone_outer);
+        tjoystick_right_wheel.setMappedId(1);
+
         dead_zone_outer = 10 * ppmX;
 
         tjoystick_right.init(pos_x, pos_y, pos_r, USB_Device::usb_joystick_x, USB_Device::usb_joystick_y, USB_Device::usb_joystick_r);
@@ -328,6 +335,22 @@ namespace InputMapper
                 id = 1;
                 break;
             
+            case HardwareButtons::BUMPER_LEFT:
+
+                if (value)
+                {
+                    tcontrols[1][0] = &tjoystick_right_wheel;
+                    gyro.disable();
+                }
+                else
+                {
+                    tcontrols[1][0] = &tjoystick_right;
+                    gyro.enable();
+                }
+
+                modifyCounter(button_map[button], value);
+                return true;
+
             default:
                 modifyCounter(button_map[button], value);
                 return true;
