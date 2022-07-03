@@ -45,7 +45,7 @@ Gyro::Gyro()
 
     bind_to_x = BIND_X;
 
-    _Enabled = [] { return false; };
+    _EnabledCallback = [] { return false; };
 }
 
 void Gyro::init()

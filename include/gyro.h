@@ -51,7 +51,8 @@ class Gyro
 
     uint32_t time0;
     uint32_t delay;
-    bool (*_Enabled)();
+    bool (*_EnabledCallback)();
+    bool enabled;
 
     public:
 
@@ -59,8 +60,10 @@ class Gyro
 
     void init();
 
-    void setEnabledCallback(bool (*_Enabled)()) { this->_Enabled = _Enabled; }
-    bool Enabled() { return _Enabled(); }
+    void setEnabledCallback(bool (*_EnabledCallback)()) { this->_EnabledCallback = _EnabledCallback; }
+    void enable() { enabled = true; }
+    void disable() { enabled = false; }
+    bool Enabled() { return enabled && _EnabledCallback(); }
 
     void setMappedId(uint8_t mapped_id) { this->mapped_id = mapped_id; }
     uint8_t getMappedId() { return mapped_id; }
