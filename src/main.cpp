@@ -9,21 +9,21 @@ const uint8_t pin_button[]  =
 {
     PB12, 0, // START
     PB13, 0, // SELECT
-    PA2,  0, // BUMPER_LEFT
+    PB5,  0, // BUMPER_LEFT
     PA8,  1, // BUMPER_RIGHT
     PB1,  0, // HOME
     PB14, 1, // GRIP_A
     PB15, 1, // GRIP_B
     PA4,  0, // GRIP_X
-    PA3,  0, // GRIP_Y
+    PB4,  0, // GRIP_Y
     PC15, 0, // TRACKPAD_LEFT
     PB3,  1, // TRACKPAD_RIGHT
 };
 
 uint8_t button_state[sizeof(pin_button) / 2] = {0};
 
-const uint8_t pin_trackpad_data[2]  = {PB5, PB9};
-const uint8_t pin_trackpad_clock[2] = {PB4, PB8};
+const uint8_t pin_trackpad_data[2]  = {PA2, PB9};
+const uint8_t pin_trackpad_clock[2] = {PA3, PB8};
 
 const uint8_t gyro_int = PC14;
 

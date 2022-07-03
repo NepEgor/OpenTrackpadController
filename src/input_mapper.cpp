@@ -180,7 +180,7 @@ namespace InputMapper
         gyro.setMappedId(1);
         //gyro.setInvertX();
         gyro.setInvertY();
-        gyro.setSensitivity(1.0f);
+        gyro.setSensitivity(0.75f);
         gyro.setDeadzone(0);
         gyro.setMinDelta(1000);
         gyro.setBindToX(Gyro::BIND_XZ);
