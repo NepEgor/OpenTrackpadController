@@ -3,6 +3,8 @@
 #include "trackpad.h"
 #include "input_mapper.h"
 
+//#define DISABLE_TRACKPADS
+
 const uint8_t pin_trigger[2] = {PA1, PA0};
 
 const uint8_t pin_button[]  =
@@ -22,14 +24,18 @@ const uint8_t pin_button[]  =
 
 uint8_t button_state[sizeof(pin_button) / 2] = {0};
 
+const uint8_t gyro_int = PC14;
+
+#ifndef DISABLE_TRACKPADS
+
 const uint8_t pin_trackpad_data[2]  = {PA2, PB9};
 const uint8_t pin_trackpad_clock[2] = {PA3, PB8};
-
-const uint8_t gyro_int = PC14;
 
 TrackPad trackpad[2]; // 0 - left, 1 - right
 
 int32_t trackpad_maxX, trackpad_maxY;
+
+#endif
 
 void setup()
 {
@@ -50,6 +56,8 @@ void setup()
         pinMode(pin_button[i], pin_button[i + 1]? INPUT_PULLDOWN : INPUT_PULLUP);
     }
     
+    #ifndef DISABLE_TRACKPADS
+
     for (uint8_t i = 0; i < sizeof(pin_trackpad_clock); ++i)
     {
         trackpad[i].initialize(pin_trackpad_clock[i], pin_trackpad_data[i]);
@@ -57,6 +65,8 @@ void setup()
 
     trackpad_maxX = trackpad[0].getMaxX();
     trackpad_maxY = trackpad[0].getMaxY();
+
+    #endif
 
     InputMapper::begin();
 
@@ -69,6 +79,8 @@ TouchEvent tevent[5];
 
 void loop()
 {
+    #ifndef DISABLE_TRACKPADS
+
     for (uint8_t t = 0; t < 2; ++t)
     {
         if (trackpad[t].poll(tevent, tevent_size) > 0)
@@ -116,6 +128,8 @@ void loop()
             }
         }
     }
+
+    #endif
 
     uint32_t triggers[] = {analogRead(pin_trigger[0]), analogRead(pin_trigger[1])};
     InputMapper::mapTriggers(triggers);
