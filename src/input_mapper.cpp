@@ -60,7 +60,7 @@ namespace InputMapper
         USB_Device::HOME,
         USB_Device::FACE_A,
         USB_Device::JOYSTICK_RIGHT,
-        USB_Device::FACE_A,
+        USB_Device::FACE_B,
         USB_Device::JOYSTICK_LEFT,
     };
 
@@ -187,7 +187,7 @@ namespace InputMapper
         gyro.setMappedId(1);
         //gyro.setInvertX();
         gyro.setInvertY();
-        gyro.setSensitivity(0.75f);
+        gyro.setSensitivity(1.0f);
         gyro.setDeadzone(0);
         gyro.setMinDelta(1000);
         gyro.setBindToX(Gyro::BIND_XZ);
