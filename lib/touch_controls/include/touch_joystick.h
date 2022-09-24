@@ -35,6 +35,8 @@ class TouchJoystick : public TouchControl
 
     void init(int32_t pos_x, int32_t pos_y, int32_t pos_r, int16_t usb_x, int16_t usb_y, int16_t usb_r);
 
+    void reset();
+
     void setDeadZoneInner(int32_t dead_zone_inner);
     void setDeadZoneOuter(int32_t dead_zone_outer);
 

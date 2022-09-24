@@ -31,6 +31,12 @@ void TouchDpad::init(int32_t pos_x, int32_t pos_y, int32_t pos_r, DpadType dpad_
     this->button = 0;
 }
 
+void TouchDpad::reset()
+{
+    TouchControl::reset();
+    this->button = 0;
+}
+
 void TouchDpad::setDeadZoneInner(int32_t dead_zone_inner)
 {
     this->dead_zone_inner = dead_zone_inner;

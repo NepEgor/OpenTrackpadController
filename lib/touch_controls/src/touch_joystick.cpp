@@ -31,6 +31,13 @@ void TouchJoystick::init(int32_t pos_x, int32_t pos_y, int32_t pos_r, int16_t us
     this->y = usb_y;
 }
 
+void TouchJoystick::reset()
+{
+    TouchControl::reset();
+    this->x = usb_x;
+    this->y = usb_y;;
+}
+
 void TouchJoystick::setDeadZoneInner(int32_t dead_zone_inner)
 {
     this->dead_zone_inner = dead_zone_inner;

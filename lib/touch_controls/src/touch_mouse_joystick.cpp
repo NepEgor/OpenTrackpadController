@@ -19,6 +19,15 @@ void TouchMouseJoystick::init(int32_t pos_x, int32_t pos_y, int32_t pos_r, int16
     this->time0 = 0;
 }
 
+void TouchMouseJoystick::reset()
+{
+    TouchJoystick::reset();
+    this->trackball_vel_x = 0;
+    this->trackball_vel_y = 0;
+    this->dx = 0;
+    this->dy = 0;
+}
+
 void TouchMouseJoystick::setSensitivity(float sensitivity)
 {
     this->sensitivity = this->pos2usb * sensitivity;

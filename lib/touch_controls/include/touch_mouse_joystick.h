@@ -23,6 +23,8 @@ class TouchMouseJoystick : public TouchJoystick
     public:
 
     void init(int32_t pos_x, int32_t pos_y, int32_t pos_r, int16_t usb_x, int16_t usb_y, int16_t usb_r);
+
+    void reset();
     
     void setSensitivity(float sensitivity);
 

@@ -31,6 +31,8 @@ class TouchDpad : public TouchControl
     TouchDpad(int32_t pos_x, int32_t pos_y, int32_t pos_r, DpadType dpad_type = DPAD_TYPE_SECTOR_4);
 
     void init(int32_t pos_x, int32_t pos_y, int32_t pos_r, DpadType dpad_type = DPAD_TYPE_SECTOR_4);
+
+    void reset();
     
     void setDeadZoneInner(int32_t dead_zone_inner);
 

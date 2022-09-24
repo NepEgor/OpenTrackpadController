@@ -337,6 +337,8 @@ namespace InputMapper
             
             case HardwareButtons::BUMPER_LEFT:
 
+                tcontrols[1][0]->reset();
+
                 if (value)
                 {
                     tcontrols[1][0] = &tjoystick_right_wheel;

@@ -43,6 +43,8 @@ class TouchControl
 
     virtual void init(int32_t pos_x, int32_t pos_y, int32_t pos_r);
 
+    virtual void reset();
+
     virtual TouchState touch(int8_t fid, int32_t tx, int32_t ty) = 0;
 
     int8_t getTouching() {return touching;}
