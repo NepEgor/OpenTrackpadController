@@ -12,14 +12,14 @@ const uint8_t pin_button[]  =
     PB12, 0, // START
     PB13, 0, // SELECT
     PB5,  0, // BUMPER_LEFT
-    PA8,  1, // BUMPER_RIGHT
+    PA8,  0, // BUMPER_RIGHT
     PB1,  0, // HOME
-    PB14, 1, // GRIP_A
-    PB15, 1, // GRIP_B
+    PB14, 0, // GRIP_A
+    PB15, 0, // GRIP_B
     PA4,  0, // GRIP_X
     PB4,  0, // GRIP_Y
     PC15, 0, // TRACKPAD_LEFT
-    PB3,  1, // TRACKPAD_RIGHT
+    PB3,  0, // TRACKPAD_RIGHT
 };
 
 uint8_t button_state[sizeof(pin_button) / 2] = {0};
@@ -132,6 +132,15 @@ void loop()
     #endif
 
     uint32_t triggers[] = {analogRead(pin_trigger[0]), analogRead(pin_trigger[1])};
+
+    //Serial.print(0);
+    //Serial.print('\t');
+    //Serial.print(triggers[0]);
+    //Serial.print('\t');
+    //Serial.print(triggers[1]);
+    //Serial.print('\t'); 
+    //Serial.println(1000);
+
     InputMapper::mapTriggers(triggers);
 
     for (uint8_t i = 0; i < sizeof(pin_button); i += 2)

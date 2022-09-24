@@ -297,24 +297,24 @@ namespace InputMapper
 
     void mapTriggers(uint32_t value[2])
     {
-        static const uint32_t max = 70;
-        static const uint32_t min = 13;
+        static const uint32_t min[] = {522, 523};
+        static const uint32_t max[] = {797, 795};
 
         uint8_t mapped_value[2];
  
         for (uint8_t i = 0; i < 2; ++i)
         {
-            if (value[i] < min)
+            if (value[i] < min[i])
             {
                 mapped_value[i] = 0;
             }
-            else if (value[i] > max)
+            else if (value[i] > max[i])
             {
                 mapped_value[i] = 255;
             }
             else
             {
-                mapped_value[i] = (value[i] - min) * 255 / (max - min);
+                mapped_value[i] = (value[i] - min[i]) * 255 / (max[i] - min[i]);
             }
         }
 
