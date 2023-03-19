@@ -109,10 +109,10 @@ TouchJoystick::TouchState TouchJoystick::touch(int8_t fid, int32_t tx, int32_t t
             }
             else // in bounds outside of outer dead zone
             {
-                float len = sqrt(t2);
+                float factor = dead_zone_outer / sqrt(t2) * pos2usb;
 
-                x = (tx * dead_zone_outer / len) * pos2usb + usb_x;
-                y = (ty * dead_zone_outer / len) * pos2usb + usb_y;
+                x = tx * factor + usb_x;
+                y = ty * factor + usb_y;
             }
 
             if (invert_x) x = 2 * usb_x - x;
