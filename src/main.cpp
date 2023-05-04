@@ -28,8 +28,8 @@ const uint8_t gyro_int = PC14;
 
 #ifndef DISABLE_TRACKPADS
 
-const uint8_t pin_trackpad_data[2]  = {PA2, PB9};
-const uint8_t pin_trackpad_clock[2] = {PA3, PB8};
+const uint8_t pin_trackpad_data[2]  = {PA2, PB9}; // elan 33200v-3600 pad T8
+const uint8_t pin_trackpad_clock[2] = {PA3, PB8}; // elan 33200v-3600 pad T7
 
 TrackPad trackpad[2]; // 0 - left, 1 - right
 
