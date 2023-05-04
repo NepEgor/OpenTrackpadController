@@ -14,7 +14,10 @@ void TouchMouseJoystick::init(int32_t pos_x, int32_t pos_y, int32_t pos_r, int16
     this->trackball_vel_x = 0;
     this->trackball_vel_y = 0;
 
+    this->usb_r2 = usb_r * usb_r;
+
     this->min_delta = 0;
+    this->min_delta2 = 0;
 
     this->time0 = 0;
 }
@@ -41,6 +44,7 @@ void TouchMouseJoystick::setTrackballFriction(float trackball_friction)
 void TouchMouseJoystick::setMinDelta(int16_t min_delta)
 {
     this->min_delta = min_delta;
+    this->min_delta2 = min_delta * min_delta;
 }
 
 TouchMouseJoystick::TouchState TouchMouseJoystick::touch(int8_t fid, int32_t tx, int32_t ty, int32_t tdx, int32_t tdy, uint32_t time)
@@ -77,11 +81,23 @@ TouchMouseJoystick::TouchState TouchMouseJoystick::touch(int8_t fid, int32_t tx,
             dx = sensitivity * -tdx;
             dy = sensitivity * -tdy;
 
-            dx = dx > usb_r? usb_r : (dx < -usb_r? -usb_r : dx);
-            dy = dy > usb_r? usb_r : (dy < -usb_r? -usb_r : dy);
+            float d2 = dx * dx + dy * dy;
 
-            dx = dx > -min_delta && dx < 0? -min_delta : (dx < min_delta && dx > 0? min_delta : dx);
-            dy = dy > -min_delta && dy < 0? -min_delta : (dy < min_delta && dy > 0? min_delta : dy);
+            if (d2 < min_delta2)
+            {
+                float factor = min_delta / sqrt(d2);
+
+                dx = dx * factor;
+                dy = dy * factor;
+            }
+            else
+            if (d2 > usb_r2)
+            {
+                float factor = usb_r / sqrt(d2);
+
+                dx = dx * factor;
+                dy = dy * factor;
+            }
 
             float dt = time - time0;
             time0 = time;
@@ -114,6 +130,7 @@ TouchMouseJoystick::TouchState TouchMouseJoystick::touch(int8_t fid, int32_t tx,
 
 void TouchMouseJoystick::updateTrackball(uint32_t time)
 {
+    // todo change to circular ranges
     if (trackball_friction > 0 && !touching)
     {
         if (trackball_vel_x != 0)

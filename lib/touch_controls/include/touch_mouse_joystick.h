@@ -16,7 +16,10 @@ class TouchMouseJoystick : public TouchJoystick
     float dx;
     float dy;
 
+    int32_t usb_r2;
+
     int16_t min_delta;
+    int32_t min_delta2;
 
     float time0;
 
