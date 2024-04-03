@@ -13,6 +13,11 @@ void JoystickMixer::init(int32_t usb_x, int32_t usb_y, int32_t usb_r)
     this->usb_y = usb_y;
     this->usb_r = usb_r;
 
+    reset();
+}
+
+void JoystickMixer::reset()
+{
     this->x = 0;
     this->y = 0;
     this->dx = 0;

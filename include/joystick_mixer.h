@@ -22,9 +22,9 @@ class JoystickMixer
     JoystickMixer(int32_t usb_x, int32_t usb_y, int32_t usb_r);
 
     void init(int32_t usb_x, int32_t usb_y, int32_t usb_r);
+    void reset();
 
     void mix(float x, float y);
-
     void mix_delta(float dx, float dy);
 
     void getXY(int32_t &x, int32_t &y);
