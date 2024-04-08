@@ -110,7 +110,7 @@ namespace InputMapper
         int32_t dead_zone_inner = 3 * ppmX;
         int32_t dead_zone_outer = 20 * ppmX;
 
-        tjoystick_left.init(pos_x, pos_y, pos_r, USB_Device::usb_joystick_x, USB_Device::usb_joystick_y, USB_Device::usb_joystick_r);
+        tjoystick_left.init(pos_x, pos_y, pos_r);
         tjoystick_left.setDeadZoneInner(dead_zone_inner);
         tjoystick_left.setDeadZoneOuter(dead_zone_outer);
         tjoystick_left.setMappedId(0);
@@ -118,14 +118,14 @@ namespace InputMapper
         pos_x = 31.25 * ppmX;
         pos_y = (103.9 - 31.25) * ppmY;
 
-        tjoystick_right_wheel.init(pos_x, pos_y, pos_r, USB_Device::usb_joystick_x, USB_Device::usb_joystick_y, USB_Device::usb_joystick_r);
+        tjoystick_right_wheel.init(pos_x, pos_y, pos_r);
         tjoystick_right_wheel.setDeadZoneInner(0);
         tjoystick_right_wheel.setDeadZoneOuter(dead_zone_outer);
         tjoystick_right_wheel.setMappedId(1);
 
         dead_zone_outer = 10 * ppmX;
 
-        tjoystick_right.init(pos_x, pos_y, pos_r, USB_Device::usb_joystick_x, USB_Device::usb_joystick_y, USB_Device::usb_joystick_r);
+        tjoystick_right.init(pos_x, pos_y, pos_r);
         //tjoystick_right.setDeadZoneInner(dead_zone_inner);
         tjoystick_right.setTrackballFriction(1.f / 8000000.f);
         //tjoystick_right.setTrackballFriction(0);

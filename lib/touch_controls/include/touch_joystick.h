@@ -14,14 +14,10 @@ class TouchJoystick : public TouchControl
     int32_t dead_zone_outer;
     int32_t dead_zone_outer2; // ^ 2
 
-    int16_t x;
-    int16_t y;
+    float x;
+    float y;
 
-    int16_t usb_x;
-    int16_t usb_y;
-    int16_t usb_r;
-
-    float pos2usb;
+    float pos2unit;
 
     bool invert_x;
     bool invert_y;
@@ -31,9 +27,9 @@ class TouchJoystick : public TouchControl
     public:
 
     TouchJoystick() {}
-    TouchJoystick(int32_t pos_x, int32_t pos_y, int32_t pos_r, int16_t usb_x, int16_t usb_y, int16_t usb_r);
+    TouchJoystick(int32_t pos_x, int32_t pos_y, int32_t pos_r);
 
-    void init(int32_t pos_x, int32_t pos_y, int32_t pos_r, int16_t usb_x, int16_t usb_y, int16_t usb_r);
+    void init(int32_t pos_x, int32_t pos_y, int32_t pos_r);
 
     void reset();
 
@@ -48,8 +44,8 @@ class TouchJoystick : public TouchControl
 
     TouchState touch(int8_t fid, int32_t tx, int32_t ty);
 
-    int16_t getX() {return x;}
-    int16_t getY() {return y;}
+    float getX() {return x;}
+    float getY() {return y;}
 };
 
 #endif
