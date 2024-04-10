@@ -128,7 +128,6 @@ TouchMouseJoystick::TouchState TouchMouseJoystick::touch(int8_t fid, int32_t tx,
 
 void TouchMouseJoystick::updateTrackball(uint32_t time)
 {
-    // todo change to circular ranges
     if (trackball_friction > 0 && !touching)
     {
         if (trackball_vel_x != 0)
@@ -139,11 +138,6 @@ void TouchMouseJoystick::updateTrackball(uint32_t time)
             float dt2 = dt * dt;
 
             float x1 = dx + trackball_vel_x * dt - trackball_friction * dt2 * dir;
-
-            if ((dir * x1) > 1.f)
-            {
-                x1 = dir;
-            }
 
             if ((dir * x1) > 0)
             {
@@ -166,11 +160,6 @@ void TouchMouseJoystick::updateTrackball(uint32_t time)
 
             float y1 = dy + trackball_vel_y * dt - trackball_friction * dt2 * dir;
 
-            if ((dir * y1) > 1.f)
-            {
-                y1 = dir;
-            }
-
             if ((dir * y1) > 0)
             {
                 y = y1;
@@ -181,6 +170,14 @@ void TouchMouseJoystick::updateTrackball(uint32_t time)
                 dy = 0;
                 trackball_vel_y = 0;
             }
+        }
+
+        float xy2 = x * x + y * y;
+        if (xy2 > 1.f)
+        {
+            float len = sqrt(xy2);
+            x /= len;
+            y /= len;
         }
     }
 }
