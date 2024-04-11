@@ -4,6 +4,8 @@
 #include "touch_controls_all.h"
 #include "gyro.h"
 
+#include "joystick_mixer.h"
+
 #include <map>
 
 #include "util_func.h"
@@ -11,6 +13,12 @@
 namespace InputMapper
 {
     USB_Device device;
+
+    JoystickMixer joystick_mixer[2] =
+    {
+        JoystickMixer(USB_Device::usb_joystick_x, USB_Device::usb_joystick_y, USB_Device::usb_joystick_r),
+        JoystickMixer(USB_Device::usb_joystick_x, USB_Device::usb_joystick_y, USB_Device::usb_joystick_r)
+    };
 
     TouchMouseJoystick tjoystick_right;
     TouchJoystick tjoystick_right_wheel;
@@ -379,12 +387,6 @@ namespace InputMapper
             device.button(it->first, it->second > 0? it->first : 0);
         }
 
-        int32_t x[2] = {USB_Device::usb_joystick_x, USB_Device::usb_joystick_x};
-        int32_t y[2] = {USB_Device::usb_joystick_y, USB_Device::usb_joystick_y};
-        int32_t dx[2] = {0, 0};
-        int32_t dy[2] = {0, 0};
-        uint8_t count[2] = {0, 0};
-
         for (uint8_t id = 0; id < 2; ++id)
         {
             for (uint8_t c = 0; c < num_controls; ++c)
@@ -396,9 +398,7 @@ namespace InputMapper
                             TouchJoystick* tjoy = (TouchJoystick*)tcontrols[id][c];
                             if (tjoy->getTouching() > TouchControl::TS_NONE)
                             {
-                                x[tjoy->getMappedId()] += tjoy->getX();
-                                y[tjoy->getMappedId()] += tjoy->getY();
-                                ++count[tjoy->getMappedId()];
+                                joystick_mixer[tjoy->getMappedId()].mix(tjoy->getX(), tjoy->getY());
                             }
                         }
                         break;
@@ -408,14 +408,11 @@ namespace InputMapper
                             TouchMouseJoystick* tmjoy = (TouchMouseJoystick*)tcontrols[id][c];
                             if (tmjoy->getTouching() == TouchControl::TS_EDGE_SPIN)
                             {
-                                x[tmjoy->getMappedId()] += tmjoy->getX();
-                                y[tmjoy->getMappedId()] += tmjoy->getY();
-                                ++count[tmjoy->getMappedId()];
+                                joystick_mixer[tmjoy->getMappedId()].mix(tmjoy->getX(), tmjoy->getY());
                             }
                             else
                             {
-                                dx[tmjoy->getMappedId()] += tmjoy->getX();
-                                dy[tmjoy->getMappedId()] += tmjoy->getY();
+                                joystick_mixer[tmjoy->getMappedId()].mix_delta(tmjoy->getX(), tmjoy->getY());
                             }
                         }
                         break;
@@ -428,27 +425,17 @@ namespace InputMapper
 
         if (gyro.Enabled())
         {
-            dx[gyro.getMappedId()] += gyro.getDX();
-            dy[gyro.getMappedId()] += gyro.getDY();
+            joystick_mixer[gyro.getMappedId()].mix_delta(gyro.getDX(), gyro.getDY());
         }
 
         for (int j = 0; j < 2; ++j)
         {
-            if (count[j] > 0)
-            {
-                x[j] = x[j] / count[j] + dx[j];
-                y[j] = y[j] / count[j] + dy[j];
-            }
-            else
-            {
-                x[j] = USB_Device::usb_joystick_x + dx[j];
-                y[j] = USB_Device::usb_joystick_y + dy[j];
-            }
+            int32_t x, y;
+            joystick_mixer[j].getXY(x, y);
 
-            x[j] = clamp(x[j], USB_Device::usb_joystick_x - USB_Device::usb_joystick_r, USB_Device::usb_joystick_x + USB_Device::usb_joystick_r);
-            y[j] = clamp(y[j], USB_Device::usb_joystick_y - USB_Device::usb_joystick_r, USB_Device::usb_joystick_y + USB_Device::usb_joystick_r);
+            device.joystick(j, x, y);
 
-            device.joystick(j, x[j], y[j]);
+            joystick_mixer[j].reset();
         }
 
         device.sendReport();
