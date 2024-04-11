@@ -39,7 +39,7 @@ void TouchMouseJoystick::setTrackballFriction(float trackball_friction)
     this->trackball_friction = trackball_friction;
 }
 
-void TouchMouseJoystick::setMinDelta(int16_t min_delta)
+void TouchMouseJoystick::setMinDelta(float min_delta)
 {
     this->min_delta = min_delta;
     this->min_delta2 = min_delta * min_delta;
