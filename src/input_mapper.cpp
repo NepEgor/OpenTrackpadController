@@ -195,9 +195,9 @@ namespace InputMapper
         gyro.setMappedId(1);
         //gyro.setInvertX();
         gyro.setInvertY();
-        gyro.setSensitivity(1.0f);
+        gyro.setSensitivity(0.00001f);
         gyro.setDeadzone(0);
-        gyro.setMinDelta(1000);
+        gyro.setMinDelta(0.0001f);
         gyro.setBindToX(Gyro::BIND_XZ);
         gyro.setDelay(1000);
 
@@ -425,7 +425,9 @@ namespace InputMapper
 
         if (gyro.Enabled())
         {
-            joystick_mixer[gyro.getMappedId()].mix_delta(gyro.getDX(), gyro.getDY());
+            float dx, dy;
+            gyro.getD(dx, dy);
+            joystick_mixer[gyro.getMappedId()].mix_delta(dx, dy);
         }
 
         for (int j = 0; j < 2; ++j)

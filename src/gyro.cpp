@@ -158,3 +158,44 @@ int16_t Gyro::getDY()
     
     return clamp(y, -32767, 32767);
 }
+
+void Gyro::getD(float &dx, float &dy)
+{
+    switch (bind_to_x)
+    {
+        case BIND_X:
+            dx = x;
+            break;
+
+        case BIND_Z:
+            dx = z;
+            break;
+
+        case BIND_XZ:
+            dx = x + z;
+    }
+
+    dy = y;
+
+    float dxy2 = dx * dx + dy * dy;
+
+    if (dxy2 < deadzone2)
+    {
+        dx = 0;
+        dy = 0;
+    }
+    else
+    if (dxy2 < min_delta2)
+    {
+        float factor = min_delta / sqrt(dxy2);
+        dx *= factor;
+        dy *= factor;
+    }
+    else
+    if (dxy2 > 1.f)
+    {
+        float len = sqrt(dxy2);
+        dx /= len;
+        dy /= len;
+    }
+}
