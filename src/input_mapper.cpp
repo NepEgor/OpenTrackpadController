@@ -181,6 +181,8 @@ namespace InputMapper
             }
         }
 
+        #ifndef DISABLE_GYRO
+
         gyro.init();
         gyro.setEnabledCallback([]{ return tjoystick_right.getTouching() > TouchControl::CT_NONE; });
         //gyro.setEnabledCallback([]{ return xinput_counter[USB_Device::BUMPER_RIGHT] > 0; });
@@ -192,6 +194,8 @@ namespace InputMapper
         gyro.setMinDelta(1000);
         gyro.setBindToX(Gyro::BIND_XZ);
         gyro.setDelay(1000);
+
+        #endif
 
         device.begin();
     }
@@ -292,7 +296,11 @@ namespace InputMapper
             }
         }
 
+        #ifndef DISABLE_GYRO
+
         gyro.update(time);
+
+        #endif
     }
 
     void mapTriggers(uint32_t value[2])
@@ -426,11 +434,15 @@ namespace InputMapper
             }
         }
 
+        #ifndef DISABLE_GYRO
+
         if (gyro.Enabled())
         {
             dx[gyro.getMappedId()] += gyro.getDX();
             dy[gyro.getMappedId()] += gyro.getDY();
         }
+
+        #endif
 
         for (int j = 0; j < 2; ++j)
         {

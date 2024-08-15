@@ -3,8 +3,6 @@
 #include "trackpad.h"
 #include "input_mapper.h"
 
-//#define DISABLE_TRACKPADS
-
 const uint8_t pin_trigger[2] = {PA1, PA0};
 
 const uint8_t pin_button[]  =
