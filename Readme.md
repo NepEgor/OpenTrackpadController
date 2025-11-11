@@ -1,6 +1,11 @@
+> [!WARNING]   
+> This repo is archived   
+> The project migrated to: https://github.com/NepEgor/opentrackpadcontroller2
+
+
 Open Trackpad Controller
 
-![Picture](https://github.com/NepEgor/opentrackpadcontroller_cad/blob/master/Pictures/front.jpg)
+![Picture](https://github.com/NepEgor/opentrackpadcontroller_cad/blob/master/Pictures/alpha1/front.jpg)
 
 Game controller with trackpads
 Inspired by Steam Controller
